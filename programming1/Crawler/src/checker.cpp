@@ -8,7 +8,7 @@ const long long MOD1 = 1073676287LL;
 const long long MOD2 = 2971215073LL;
 const long long base = 241;
 
-FILE* data = NULL;
+FILE *data = NULL;
 
 set<pair<long long, long long> > looked;
 
