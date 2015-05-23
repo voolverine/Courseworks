@@ -1,11 +1,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <string.h>
 #include <queue>
 #include <vector>
 #include <ctime>
 #include <thread>
 #include <set>
+#include <sys/statvfs.h>
 
 #include "parser.h"
 #include "checker.h"
@@ -19,6 +21,26 @@ const unsigned int MAX_QUEUE_SIZE = 1000000;
 queue<string> urls_to_save;
 set<pair<long long, long long> > in_queue;
 bool finished = false;
+
+
+void sleep(int delay) 
+{
+    double goal = (double)delay / 1000.0 + (double)clock() / CLOCKS_PER_SEC;
+    while (goal > (double)clock() / CLOCKS_PER_SEC) {}
+}
+
+
+double free_space(string path) 
+{
+    struct statvfs info;
+
+    if (statvfs(path.c_str(), &info) != -1) 
+    {
+        return (double)info.f_bsize * info.f_bfree / (1024 * 1024);
+    }
+
+    return 10000; // I hope it will never execute
+}
 
 
 bool is_in_queue(string &s) 
@@ -52,17 +74,10 @@ void push_in_queue(vector<string> &urls)
 }
 
 
-void sleep(int delay) 
-{
-    double goal = (double)delay / 1000.0 + (double)clock() / CLOCKS_PER_SEC;
-    while (goal > (double)clock() / CLOCKS_PER_SEC) {}
-}
-
-
 string get_random_article() 
 {   
     system(("wget --directory-prefix=../Downloads/temp " + RANDOM).c_str());
-    sleep(500);
+//    sleep(500);
     
     string filename = "Special:Random";
     string article_name = "";
@@ -121,16 +136,17 @@ void crawl()
             mark_as_looked(page_title);
 
             vector<string> possible_urls = parse(page_title);
+
             push_in_queue(possible_urls);
        
-            sleep(500);
+ //           sleep(500);
 
             if (urls_to_save.size() == 0) 
             {
                 search_something_new();
             }
 
-            if (finished) 
+            if (finished || free_space(".") < 5000) 
             {
                 return;
             }
@@ -152,6 +168,7 @@ void read_queue()
 
         while (fgets(buff, 500, in) != NULL) 
         {
+            buff[strlen(buff) - 1] = '\0';
             urls.push_back(buff); 
         }
 

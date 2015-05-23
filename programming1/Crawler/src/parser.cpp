@@ -49,7 +49,9 @@ void find_urls(vector<string> &urls, string s)
 
                 if (!trash) 
                 {
-                    urls.push_back(temp);
+                    if (temp.size() != 0) {
+                        urls.push_back(temp);
+                    }
                 }
             }
         }
@@ -136,6 +138,7 @@ vector<string> parse(string filename)
     html_file = fopen(filename.c_str(), "r");
    
     char buff[500];
+
     if (html_file != NULL) 
     {
         while (fgets(buff, 500, html_file) != NULL)  
