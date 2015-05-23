@@ -124,7 +124,7 @@ void search_something_new()
 
 void crawl() 
 {
-    while (!urls_to_save.empty()) 
+    while (42) 
         {
             string page_title = urls_to_save.front();
             string current_url = PREFIX + page_title; 
