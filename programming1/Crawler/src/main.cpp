@@ -112,6 +112,10 @@ void crawl()
         {
             search_something_new();
         }
+        if (finished || free_space(".") < 5000 || errors > 500) 
+        {
+            return;
+        }
 
         string page_title = urls_to_save.front();
         string current_url = PREFIX + page_title; 
@@ -133,10 +137,6 @@ void crawl()
             errors = 0;
         }
         //sleep(500);
-        if (finished || free_space(".") < 5000 || errors > 500) 
-        {
-            return;
-        }
     }
 
     return;
