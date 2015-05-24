@@ -79,30 +79,12 @@ string get_random_article()
     system(("wget --directory-prefix=../Downloads/temp " + RANDOM).c_str());
 //    sleep(500);
     
-    string filename = "Special:Random";
-    string article_name = "";
-    FILE *html_file = NULL;
-    html_file = fopen(("../Downloads/temp/" + filename).c_str(), "r");
-
-    if (html_file != NULL) 
-    {
-        char buff[1000];
-        while (fgets(buff, 1000, html_file) != NULL) 
-        {
-            article_name = get_title(buff);
-            if (article_name != "") 
-            {
-                break;
-            }
-        }
-
-        fclose(html_file);
-    }
-
+    string article_url= get_article_url("../Downloads/temp/Special:Random");
 
     system("rm -rf ../Downloads/temp/*");  
-    return get_url_from_title(article_name);
+    return article_url;
 }
+
 
 void search_something_new() 
 {
@@ -115,7 +97,6 @@ void search_something_new()
         {
             return;
         }
-
     }
 
     return;
@@ -124,33 +105,39 @@ void search_something_new()
 
 void crawl() 
 {
-    while (!urls_to_save.empty()) 
+    int errors = 0; 
+    while (42) 
+    {
+        if (urls_to_save.size() == 0) 
         {
-            string page_title = urls_to_save.front();
-            string current_url = PREFIX + page_title; 
-            urls_to_save.pop();
-
-            string system_query = "wget --directory-prefix=../Downloads/ ";
-            system_query += current_url;
-            system(system_query.c_str());
-            mark_as_looked(page_title);
-
-            vector<string> possible_urls = parse(page_title);
-
-            push_in_queue(possible_urls);
-       
- //           sleep(500);
-
-            if (urls_to_save.size() == 0) 
-            {
-                search_something_new();
-            }
-
-            if (finished || free_space(".") < 5000) 
-            {
-                return;
-            }
+            search_something_new();
         }
+
+        string page_title = urls_to_save.front();
+        string current_url = PREFIX + page_title; 
+        urls_to_save.pop();
+
+        string system_query = "wget --directory-prefix=../Downloads/ ";
+        system_query += current_url;
+        int query = system(system_query.c_str());
+        
+        mark_as_looked(page_title);
+
+        vector<string> possible_urls = parse(page_title);
+        push_in_queue(possible_urls);
+
+        if (query != 0) {
+            errors++;       
+        } else 
+        {
+            errors = 0;
+        }
+        //sleep(500);
+        if (finished || free_space(".") < 5000 || errors > 500) 
+        {
+            return;
+        }
+    }
 
     return;
 }
@@ -201,12 +188,6 @@ int main()
     read_all_visited();
     read_queue();
 
-    if (urls_to_save.empty()) 
-    {
-        urls_to_save.push("");
-    }
-
-
     thread crawler(crawl);    
 
     char c;
@@ -228,7 +209,6 @@ int main()
         save_queue();
     }
 
-        
     return 0;
 }
 

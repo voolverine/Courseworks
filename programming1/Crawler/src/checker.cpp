@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <string>
+#include <string.h>
 #include <set>
 
 using namespace std;
@@ -8,7 +9,6 @@ const long long MOD1 = 1073676287LL;
 const long long MOD2 = 2971215073LL;
 const long long base = 241;
 
-FILE *data = NULL;
 
 set<pair<long long, long long> > looked;
 
@@ -31,14 +31,11 @@ pair<long long, long long> getHash(string s)
     return make_pair(hash1, hash2);
 }
 
+
 void mark_as_looked(string url) 
 {
     pair<long long, long long> hash = getHash(url);
     looked.insert(hash);
-    if (data != NULL) 
-    {
-        fprintf(data, "%lld %lld\n", hash.first, hash.second);    
-    }
 }
 
 
@@ -66,35 +63,32 @@ bool check(string url)
 }
 
 
-string ll_to_str(long long value) 
+vector<string> get_filenames_in_dir(string dir) 
 {
-    string result = "";
-    while (value > 0) 
+    vector<string> result;
+
+    FILE *names;
+    names = popen(("ls -a1 " + dir).c_str(), "r");
+    
+    char buff[1000];
+    while (!feof(names) && fgets(buff, 1000, names)) 
     {
-        result += (value % 10) + '0';
-        value /= 10;
+        string new_file = buff;
+        new_file.erase(new_file.end() - 1, new_file.end());     // remove \n at the end
+        result.push_back(new_file);
     }
-    reverse(result.begin(), result.end());
+
     return result;
 }
 
 
 void read_all_visited() 
 {
+    vector<string> all_files = get_filenames_in_dir("../Downloads/");
     looked.clear();
-    
-    data = fopen("../Downloads/visited", "a+");
    
-    if (data != NULL) 
+    for (int i = 0; i < (int)all_files.size(); i++) 
     {
-        char buff[100];
-        while (fgets(buff, 100, data) != NULL) 
-        {
-            long long first_hash, second_hash;
-            sscanf(buff, "%lld %lld", &first_hash, &second_hash);
-            looked.insert(make_pair(first_hash, second_hash));
-        }
+        mark_as_looked(all_files[i]);
     }
-
-    fflush(data);
 }

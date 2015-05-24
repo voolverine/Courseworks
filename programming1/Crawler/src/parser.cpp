@@ -33,12 +33,12 @@ void find_urls(vector<string> &urls, string s)
 
                 for (int j = (int)TEMPLATE.size(); j + i < (int)s.size(); j++) 
                 {
-                    if (s[i + j] == '\"') 
+                    if (s[i + j] == '\"' || s[i + j] == '\n') 
                     {
                         break;
                     }
 
-                    if (s[i + j] == ':') 
+                    if (s[i + j] == ':' || s[i + j] == '%') 
                     {
                         trash = true;
                         break;
@@ -53,8 +53,10 @@ void find_urls(vector<string> &urls, string s)
                         urls.push_back(temp);
                     }
                 }
+
             }
         }
+
     }
 }
 
@@ -87,7 +89,7 @@ string get_title(string line)
     if (main_title_here) 
     {
         bool between_tags = false;
-        for (int i = 0; i < (int)line.size(); i++) 
+        for (int i = 0; i < (int)line.size() - 1; i++) // -1 to remove \n
         {
             if (line[i] == '<') 
             {
@@ -121,6 +123,29 @@ string get_url_from_title(string article_name)
 }
 
 
+string get_article_url(string filename) 
+{
+    string article_name = "";
+    FILE *html_file = NULL;
+    html_file = fopen(filename.c_str(), "r");
+
+    if (html_file != NULL) 
+    {
+        char buff[1000];
+        while (fgets(buff, 1000, html_file) != NULL) 
+        {
+            article_name = get_title(buff);
+            if (article_name != "") 
+            {
+                break;
+            }
+        }
+
+        fclose(html_file);
+    }
+
+    return get_url_from_title(article_name);
+}
 
 
 vector<string> parse(string filename) 
