@@ -122,7 +122,7 @@ void crawl()
         urls_to_save.pop();
 
         string system_query = "wget --directory-prefix=../Downloads/ ";
-        system_query += current_url;
+        system_query += "\'" + current_url + "\'";
         int query = system(system_query.c_str());
         
         mark_as_looked(page_title);
