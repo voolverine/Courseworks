@@ -9,6 +9,8 @@ using namespace std;
 const string MAIN_TITLE_CLASS = "firstHeading";
 const string PREFIX = "<div id=\"mw-content-text\"";
 const string DIV_START = "<div";
+const string TABLE_START = "<table";
+const string TABLE_END = "</table>";
 const string DIV_END = "</div";
 const string H2 = "<h2>";
 
@@ -30,6 +32,7 @@ string get_main_text(string file)
     bool in = false;
     string result = "";
     int div_start = 0, div_end = 0;
+    int table_start = 0, table_end = 0;
 
     for (int i = 0; i < (int)file.size(); i++) 
     {
@@ -49,7 +52,17 @@ string get_main_text(string file)
         {
             break;
         }
-        if (in) 
+        if (find_prefix(TABLE_START, file, i)) 
+        {
+            table_start++; 
+        }
+        if (find_prefix(TABLE_END, file, i)) 
+        {
+            table_end++; 
+        }
+
+
+        if (in && div_end == (div_start - 1) && table_start - table_end <= 0) 
         {
             result += file[i];
         }
@@ -119,10 +132,10 @@ string get_title(string line)
         return title;
     }
 
-    bool main_title_here;
-    for (int i = 0; i < (int)line.size(); i++) 
+    int i;
+    for (i = 0; i < (int)line.size(); i++) 
     {   
-        main_title_here = true;
+        bool main_title_here = true;
         for (int j = 0; i + j < (int)line.size() && j < (int)MAIN_TITLE_CLASS.size(); j++) 
         {
             if (line[i + j] != MAIN_TITLE_CLASS[j]) 
@@ -137,28 +150,58 @@ string get_title(string line)
         }
     }
 
-    if (main_title_here) 
+    bool between_tags = false;
+    for (; i < (int)line.size() - 1; i++) // -1 to remove \n
     {
-        bool between_tags = false;
-        for (int i = 0; i < (int)line.size() - 1; i++) // -1 to remove \n
+        if (line[i] == '<') 
         {
-            if (line[i] == '<') 
-            {
-                between_tags = false;
-            }
-            if (between_tags) 
-            {
-                title += line[i];
-            }
-            if (line[i] == '>') 
-            {
-                between_tags = true;
-            }
+            between_tags = false;
+            break;                // that because we have all file in one string
+        }
+        if (between_tags) 
+        {
+            title += line[i];
+        }
+        if (line[i] == '>') 
+        {
+            between_tags = true;
         }
     }
 
     return title;
 }
+
+
+string get_url_from_title(string s) 
+{
+    for (int i = 0; i < (int)s.size(); i++) 
+    {
+        if (s[i] == ' ') 
+        {
+            s[i] = '_';
+        }
+    }
+
+    return s;
+}
+
+
+void remove_whitelines(string &s) 
+{
+    int beg = 0;
+    int end = s.size() - 1;
+    while (beg < (int)s.size() && s[beg] == '\n') 
+    {
+        beg++;
+    }
+    while (end >= 0 && s[end] == '\n') 
+    {
+        end--;
+    }
+
+    s = s.substr(beg, end - beg + 1);
+}
+
 
 
 pair<string, string> parse(string filename) 
@@ -177,6 +220,7 @@ pair<string, string> parse(string filename)
     file = get_main_text(file);
     file = remove_tags(file); 
     file = remove_buttons(file);
+    remove_whitelines(file);
     
     fclose(html);
     return make_pair(title, file);
