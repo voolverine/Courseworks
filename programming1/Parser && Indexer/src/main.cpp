@@ -4,6 +4,8 @@
 #include <vector>
 #include <algorithm>
 #include <stack>
+#include <map>
+#include <thread>
 
 #include "text_parser.h"
 
@@ -12,6 +14,51 @@ using namespace std;
 
 string html_dir;
 string text_dir;
+
+bool finished = false;
+
+
+class article 
+{
+    public:
+        long int from, to;
+        string url;
+        double pageRank;
+
+    article(long int from, long int to, string url,
+                double pageRank = 0): from(from), to(to), url(url), pageRank(pageRank) {}
+
+};
+
+
+map<pair<long long, long long>, int> saved; // url_hash -> id
+vector<article> info; // id -> article info
+
+const long long MOD1 = 1073676287LL;
+const long long MOD2 = 2971215073LL;
+const long long base = 241;
+
+
+FILE *articles = NULL;
+
+
+pair<long long, long long> getHash(string s) 
+{
+    long long hash1 = 0;
+    long long hash2 = 0;
+    long long power1 = 1;
+    long long power2 = 1;
+
+    for (int i = 0; i < (int)s.size(); i++) 
+    {
+        (hash1 += s[i] * power1) %= MOD1;
+        (hash2 += s[i] * power2) %= MOD2;
+        (power1 *= base) %= MOD1;
+        (power2 *= base) %= MOD2;
+    }
+
+    return make_pair(hash1, hash2);
+}
 
 
 vector<string> get_filenames_in_dir(string dir) 
@@ -33,21 +80,33 @@ vector<string> get_filenames_in_dir(string dir)
 }
 
 
-void save_text(string &title, string &text, string &filename) 
-{
-    FILE *out = NULL;
-    out = fopen((text_dir + filename).c_str(), "w");
-    
-    if (out != NULL) 
-    {
-        fprintf(out, "%s\n", title.c_str()):
-        fprintf(out, "%s", text.c_str());
-        fclose(out);
-    }
 
-    return;
+bool already_saved(string url) 
+{
+    pair<long long, long long> hash = getHash(url);
+
+    if (saved.find(hash) == saved.end()) 
+    {
+        return false;
+    }
+    return true;
 }
 
+
+void save_text(string &title, string &text, string url) 
+{
+    fseek(articles, 0, SEEK_END); 
+
+    long int from = ftell(articles);
+    saved[getHash(url)] = (int)info.size() - 1;
+
+    fprintf(articles, "%s\n\n", title.c_str());
+    fprintf(articles, "%s\n", text.c_str()); 
+
+    long int to = ftell(articles);
+    info.push_back(article(from, to, url));    
+    return;
+}
 
 
 void Parse_all_files() 
@@ -56,13 +115,58 @@ void Parse_all_files()
 
     for (int i = 0; i < (int)all_files.size(); i++) 
     {
-        string text = parse(all_files[i]);
-        save_text(text.first, text.second, all_files[i]);
+        pair<string, string> text = parse(html_dir + all_files[i]);
+        if (!already_saved(get_url_from_title(text.first))) 
+        {
+            save_text(text.first, text.second, get_url_from_title(all_files[i]));
+        }
+
+        if (finished) 
+        {
+            break;
+        }
     }
 
     return;
 }
 
+
+void add_to_saved(int id, string url) 
+{
+    saved[getHash(url)] = id;
+}
+
+
+void read_info() 
+{
+    FILE *id = fopen((text_dir + "id.dat").c_str(), "r");
+    long int from, to;
+    char buff[200];
+
+    while (fscanf(id, "%ld %ld %s\n", &from, &to, buff) != EOF) 
+    {
+        if (!already_saved(buff)) 
+        {
+            info.push_back(article(from, to, buff));
+            add_to_saved((int)info.size() - 1, buff);
+        }
+    }
+
+    fclose(id);
+}
+
+
+void save_info() 
+{
+    FILE *id = fopen((text_dir + "id.dat").c_str(), "w");
+
+    for (int i = 0; i < (int)info.size(); i++) 
+    {
+        fprintf(id, "%ld %ld %s\n", info[i].from, info[i].to, info[i].url.c_str()); 
+    }
+
+    fclose(id);
+}
 
 
 int main(int argc, char *argv[]) 
@@ -77,8 +181,27 @@ int main(int argc, char *argv[])
         text_dir = "../text_files/";
     }
 
-    Parse_all_files();
+    articles = fopen((text_dir + "articles.txt").c_str(), "a+");
+    
+    read_info();
+    thread Parser(Parse_all_files); 
 
+    char c;
+    while (42) 
+    {
+        c = getchar(); 
 
+        if (c == 10) 
+        {
+            finished = true;
+            break;
+        }
+    }
+
+    Parser.join();
+
+    save_info();
+
+    fclose(articles);
     return 0;
 }
