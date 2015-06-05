@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstdio>
 #include <string>
 #include <string.h>
 #include <vector>
@@ -6,9 +7,12 @@
 #include <stack>
 #include <map>
 #include <thread>
+#include <queue>
+#include <ctime>
 
 #include "text_parser.h"
 
+#define EPS 1e-3
 
 using namespace std;
 
@@ -16,6 +20,24 @@ string html_dir;
 string text_dir;
 
 bool finished = false;
+
+class edge 
+{
+
+public:
+
+    int to;
+    double flow;
+
+    edge(int to, double flow): to(to), flow(flow) {}
+
+    void change_flow(double new_flow) 
+    {
+        flow = new_flow;
+    }
+
+};
+
 
 
 class article 
@@ -26,13 +48,14 @@ class article
         double pageRank;
 
     article(long int from, long int to, string url,
-                double pageRank = 0): from(from), to(to), url(url), pageRank(pageRank) {}
+                double pageRank = 10): from(from), to(to), url(url), pageRank(pageRank) {}
 
 };
 
 
 map<pair<long long, long long>, int> saved; // url_hash -> id
 vector<article> info; // id -> article info
+vector<vector<edge> > graph; // graph from id
 
 const long long MOD1 = 1073676287LL;
 const long long MOD2 = 2971215073LL;
@@ -63,6 +86,20 @@ pair<long long, long long> getHash(string s)
     }
 
     return make_pair(hash1, hash2);
+}
+
+
+int get_id(string s) 
+{
+    pair<long long, long long> hash = getHash(s);
+    map<pair<long long, long long>, int>::iterator it = saved.find(hash);
+    if (it != saved.end()) 
+    {
+        return it -> second;
+    } else 
+    {
+        return -1;
+    }
 }
 
 
@@ -140,6 +177,9 @@ void Parse_all_files()
         {
             break;
         }
+        if (i % 100 == 0) {
+            printf("%lf procents of parsing complited.\n", (double) i * 100.0 / (double)all_files.size());
+        }
     }
     
     printf("Parsing finished. Press Enter.\n");
@@ -157,13 +197,14 @@ void read_info()
 {
     FILE *id = fopen((text_dir + "id.dat").c_str(), "r");
     long int from, to;
+    double pageRank;
     char buff[200];
 
-    while (fscanf(id, "%ld %ld %s", &from, &to, buff) != EOF) 
+    while (fscanf(id, "%ld %ld %lf %s", &from, &to, &pageRank, buff) != EOF) 
     {
         if (!already_saved(buff)) 
         {
-            info.push_back(article(from, to, buff));
+            info.push_back(article(from, to, buff, pageRank));
             add_to_saved((int)info.size() - 1, buff);
         }
     }
@@ -175,10 +216,10 @@ void read_info()
 void save_info() 
 {
     FILE *id = fopen((text_dir + "id.dat").c_str(), "w");
-
+    
     for (int i = 0; i < (int)info.size(); i++) 
     {
-        fprintf(id, "%ld %ld %s\n", info[i].from, info[i].to, info[i].url.c_str()); 
+        fprintf(id, "%ld %ld %lf %s\n", info[i].from, info[i].to, info[i].pageRank, info[i].url.c_str()); 
     }
 
     fclose(id);
@@ -199,9 +240,144 @@ void remove_all_copies(string dir)
 }
 
 
+void make_graph() 
+{
+    graph.resize(info.size());
+
+    for (int i = 0; i < (int)info.size(); i++) 
+    {
+        int current_id = get_id(info[i].url);
+        if (current_id != -1) {
+            vector<string> all_urls = get_all_urls("../../html_files/" + info[i].url);
+
+            for (int i = 0; i < (int)all_urls.size(); i++) 
+            {
+                int to_id = get_id(all_urls[i]); 
+                if (to_id != -1 && to_id != current_id) 
+                {
+                    graph[current_id].push_back(edge(to_id, 0));
+                }
+            }
+
+            graph[current_id].push_back(edge(rand() % (int)info.size(), 0));
+        }
+
+        if (i % 1000 == 0) // Show status
+        {
+            printf("%lf persents of graph made\n", (double)i * 100.0 / (double)info.size());
+        }
+
+
+    }
+}
+
+
+void bfs(int x) 
+{
+    queue<int> q;
+    q.push(x);
+
+    while (!q.empty()) 
+    {
+        int u = q.front();
+        q.pop();
+
+        double could_add = (double)info[u].pageRank / (double)graph[u].size();
+
+        for (int i = 0; i < (int)graph[u].size(); i++)
+        {
+            int v = graph[u][i].to;
+            double cur_flow = graph[u][i].flow;
+
+            if (could_add - cur_flow > EPS) 
+            {
+                    q.push(v);
+
+                info[v].pageRank += could_add - cur_flow;
+
+                graph[u][i].change_flow(could_add);
+            }
+        }
+
+        if (finished) 
+        {
+            break;
+        }
+
+    }
+
+}
+
+
+
+void calc_pageRanking() 
+{
+    for (int i = 0; i < (int)graph.size(); i++) 
+    {
+        printf("Now we are trying to bfs from id = %d\n", i);
+        bfs(i);
+        if (finished) 
+        {
+            break;
+        }
+
+    }
+
+    printf("Rating already finished.\n Press Enter.\n");
+}
+
+
+void wait() 
+{
+    char c;
+
+    while (42) 
+    {
+        c = getchar(); 
+
+        if (c == 10) 
+        {
+            finished = true;
+            break;
+        }
+    }
+}
+
+
+void save_graph() 
+{
+    FILE *out = fopen("../../url_graph.dat", "w");
+
+    for (int i = 0; i < (int)graph.size(); i++) 
+    {
+        for (int j = 0; j < (int)graph[i].size(); j++) 
+        {
+            fprintf(out, "%d %d %lf\n", i, graph[i][j].to, graph[i][j].flow);
+        }
+    }
+    
+    fclose(out);
+}
+
+void read_graph() 
+{
+    FILE *in = fopen("../../url_graph.dat", "r");
+    int u, v;
+    double flow;
+    graph.resize((int)info.size());
+
+    while (fscanf(in, "%d %d %lf\n", &u, &v, &flow) != EOF)
+    {
+        graph[u].push_back(edge(v, flow));
+    }
+
+    fclose(in);
+}
+
 
 int main(int argc, char *argv[]) 
 {
+    srand(time(NULL));
     if (argc == 2) 
     {
         html_dir = argv[0];
@@ -213,27 +389,28 @@ int main(int argc, char *argv[])
     }
 
     articles = fopen((text_dir + "articles.txt").c_str(), "a+");
-    
     read_info();
+/*
     //remove_all_copies(html_dir);
     thread Parser(Parse_all_files); 
+    wait();
 
-    char c;
-    while (42) 
-    {
-        c = getchar(); 
-
-        if (c == 10) 
-        {
-            finished = true;
-            break;
-        }
-    }
+    finished = false;
 
     Parser.join();
 
-    save_info();
+    make_graph();
+    save_graph();
+*/
+    
+    read_graph();
+    thread ranking(calc_pageRanking);
+    wait();
 
+    ranking.join();
+    save_graph();
+    save_info();
+    
     fclose(articles);
     return 0;
 }
