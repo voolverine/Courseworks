@@ -11,6 +11,19 @@ const long long MOD2 = 2971215073LL;
 const long long base = 241;
 
 
+void to_low(string &word) 
+{
+    for (int i = 0; i < (int)word.size(); i++) 
+    {
+        if (word[i] >= 'A' && word[i] <= 'Z') 
+        {
+            word[i] = word[i] - 'A' + 'a';
+        }
+
+    }
+}
+
+
 pair<long long, long long> getHash(string s) 
 {
     while (s.size() > 0 && s[(int)s.size() - 1] == '\n') 
@@ -45,7 +58,8 @@ int get_count_of_word(string word, string file)
     
     int len = (int)word.size();
     int count = 0;
-
+    to_low(word);
+    to_low(file);
     string s = word + "#$#" + file;
 
 	int n = (int) s.length();
@@ -79,6 +93,7 @@ vector<string> get_dif_words_in_article(string s)
 {
     set<pair<long long, long long> > used;
     vector<string> ans;
+    to_low(s);
 
     string temp = "";
     for (int i = 0; i < (int)s.size(); i++) 

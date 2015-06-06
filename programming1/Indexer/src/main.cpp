@@ -4,11 +4,35 @@
 #include <map>
 
 #include "counter.h"
+#include "../../OleanderStemmingLibrary/stemming/english_stem.h"
+
 
 using namespace std;
 
+
+const double PR_K = 0.3;
+const double TF_IDF_k = 0.7;
+
+
 string text_dir = "";
 string index_file = "";
+
+
+string steamm(string ANSIWord) 
+{
+    stemming::english_stem<> StemEnglish;
+    wchar_t* UnicodeTextBuffer = new wchar_t[ANSIWord.length() + 1];
+    wmemset(UnicodeTextBuffer, 0, ANSIWord.length() + 1);
+    mbstowcs(UnicodeTextBuffer, ANSIWord.c_str(), ANSIWord.length());
+    wstring word = UnicodeTextBuffer;
+    StemEnglish(word);
+
+    return string(word.begin(), word.end());
+}
+
+
+
+
 
 class R_file 
 {
@@ -51,6 +75,15 @@ public:
     {
         bm25 = new_bm25;
     }
+
+    bool operator<(const R_file &second) 
+    {
+        double myWeight = pageRank * 0.3 + tf_idf * 0.7;
+        double secondWeight = second.pageRank * 0.3 + second.tf_idf * 0.7;
+
+        return myWeight < secondWeight;
+    }
+
 };
 
 
@@ -66,7 +99,7 @@ class article
 
 };
 
-map<pair<long long, long long>, vector<R_file> > index;
+map<pair<long long, long long>, vector<R_file> > indexes;
 vector<article> info;
 
 void read_info() 
@@ -89,7 +122,7 @@ void add_words_in_index()
 {
     FILE *articles = fopen((text_dir + "articles.txt").c_str(), "r");
 
-    for (int i = 0; i < /*(int)info.size()*/1000; i++) 
+    for (int i = 0; i < (int)info.size(); i++) 
     {
         fseek(articles, info[i].from, SEEK_SET);
 
@@ -101,17 +134,21 @@ void add_words_in_index()
         }
         
         vector<string> words = get_dif_words_in_article(current_article);
+        for (int i = 0; i < (int)words.size(); i++) 
+        {
+            words[i] = steamm(words[i]);
+        }
 
         for (int j = 0; j < (int)words.size(); j++) 
         {
             pair<long long, long long> hash = getHash(words[j]);
 
-            map<pair<long long, long long>, vector<R_file> > :: iterator it = index.find(hash);
+            map<pair<long long, long long>, vector<R_file> > :: iterator it = indexes.find(hash);
 
-            if (it == index.end()) 
+            if (it == indexes.end()) 
             {
-                index[hash] = vector<R_file> (0);
-                it = index.find(hash);
+                indexes[hash] = vector<R_file> (0);
+                it = indexes.find(hash);
             }
         
             it -> second.push_back(R_file(i, info[i].pageRank)); 
@@ -132,7 +169,7 @@ void save_index()
 {
     FILE *out = fopen(index_file.c_str(), "w");
     
-    for (map<pair<long long, long long>, vector<R_file> > :: iterator it = index.begin(); it != index.end();
+    for (map<pair<long long, long long>, vector<R_file> > :: iterator it = indexes.begin(); it != indexes.end();
             it++) 
     {
         fprintf(out, "%lld %lld %d\n", it -> first.first, it -> first.second, (int)it -> second.size());
@@ -156,12 +193,12 @@ void add_in_map(long long hash1, long long hash2, int id, double pageRank,
                             double tf, double idf, double tf_idf, double bm25) 
 {
     pair<long long, long long> hash (hash1, hash2);
-    map<pair<long long, long long>, vector<R_file> > :: iterator it = index.find(hash);
+    map<pair<long long, long long>, vector<R_file> > :: iterator it = indexes.find(hash);
 
-    if (it == index.end()) 
+    if (it == indexes.end()) 
     {
-        index[hash] = vector<R_file> (0);
-        it = index.find(hash);
+        indexes[hash] = vector<R_file> (0);
+        it = indexes.find(hash);
     }
 
     it -> second.push_back(R_file(id, pageRank, tf, idf, tf_idf, bm25));
@@ -199,8 +236,8 @@ void read_index()
 
 void calc_idf() 
 {
-    for (map<pair<long long, long long>, vector<R_file> > :: iterator it = index.begin();
-                it != index.end(); it++) 
+    for (map<pair<long long, long long>, vector<R_file> > :: iterator it = indexes.begin();
+                it != indexes.end(); it++) 
     {
         double idf = log((double)info.size() / (double)it -> second.size());
 

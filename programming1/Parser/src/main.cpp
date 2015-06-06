@@ -12,7 +12,7 @@
 
 #include "text_parser.h"
 
-#define EPS 1e-3
+#define EPS 3e-1
 
 using namespace std;
 
@@ -43,12 +43,12 @@ public:
 class article 
 {
     public:
-        long int from, to;
+        long int from, to, word_count;
         string url;
         double pageRank;
 
-    article(long int from, long int to, string url,
-                double pageRank = 10): from(from), to(to), url(url), pageRank(pageRank) {}
+    article(long int from, long int to, long int word_count, string url,
+                double pageRank = 10): from(from), to(to), word_count(word_count), url(url), pageRank(pageRank) {}
 
 };
 
@@ -139,6 +139,31 @@ bool already_saved(string url)
 }
 
 
+int get_word_count(pair<string, string> text) 
+{
+    int word_count = 0;
+    for (int i = 0; i < (int)text.first.size(); i++) 
+    {
+        if (text.first[i] == ' ') 
+        {
+            word_count++;
+        }
+
+    }
+
+    for (int i = 0; i < (int)text.second.size(); i++) 
+    {
+        if (text.second[i] == ' ') 
+        {
+            word_count++;
+        }
+    }
+    
+    return word_count + 2;
+}
+
+
+
 void save_text(string &title, string &text, string url) 
 {
     fseek(articles, 0, SEEK_END); 
@@ -150,7 +175,7 @@ void save_text(string &title, string &text, string url)
     fprintf(articles, "%s\n", text.c_str()); 
 
     long int to = ftell(articles);
-    info.push_back(article(from, to, url));    
+    info.push_back(article(from, to, get_word_count(make_pair(title, text)), url));    
     return;
 }
 
@@ -178,7 +203,7 @@ void Parse_all_files()
             break;
         }
         if (i % 100 == 0) {
-            printf("%lf procents of parsing complited.\n", (double) i * 100.0 / (double)all_files.size());
+            printf("%lf percents of parsing complited.\n", (double) i * 100.0 / (double)all_files.size());
         }
     }
     
@@ -196,15 +221,15 @@ void add_to_saved(int id, string url)
 void read_info() 
 {
     FILE *id = fopen((text_dir + "id.dat").c_str(), "r");
-    long int from, to;
+    long int from, to, word_count;
     double pageRank;
     char buff[200];
 
-    while (fscanf(id, "%ld %ld %lf %s", &from, &to, &pageRank, buff) != EOF) 
+    while (fscanf(id, "%ld %ld %ld %lf %s", &from, &to, &word_count,  &pageRank, buff) != EOF) 
     {
         if (!already_saved(buff)) 
         {
-            info.push_back(article(from, to, buff, pageRank));
+            info.push_back(article(from, to, word_count,  buff, pageRank));
             add_to_saved((int)info.size() - 1, buff);
         }
     }
@@ -219,7 +244,8 @@ void save_info()
     
     for (int i = 0; i < (int)info.size(); i++) 
     {
-        fprintf(id, "%ld %ld %lf %s\n", info[i].from, info[i].to, info[i].pageRank, info[i].url.c_str()); 
+        fprintf(id, "%ld %ld %ld %lf %s\n", info[i].from, info[i].to, info[i].word_count, info[i].pageRank, info[i].url.c_str());  
+         // Format: |from -> to|, word_count, pageRank, url
     }
 
     fclose(id);
@@ -264,7 +290,7 @@ void make_graph()
 
         if (i % 1000 == 0) // Show status
         {
-            printf("%lf persents of graph made\n", (double)i * 100.0 / (double)info.size());
+            printf("%lf percents of graph made\n", (double)i * 100.0 / (double)info.size());
         }
 
 
@@ -291,12 +317,17 @@ void bfs(int x)
 
             if (could_add - cur_flow > EPS) 
             {
-                    q.push(v);
 
                 info[v].pageRank += could_add - cur_flow;
 
                 graph[u][i].change_flow(could_add);
+
+                if ((int)q.size() < 1000) 
+                {
+                    q.push(v);
+                }
             }
+            
         }
 
         if (finished) 
@@ -390,18 +421,19 @@ int main(int argc, char *argv[])
 
     articles = fopen((text_dir + "articles.txt").c_str(), "a+");
     read_info();
-/*
+
     //remove_all_copies(html_dir);
-    thread Parser(Parse_all_files); 
+   /* thread Parser(Parse_all_files); 
     wait();
 
-    finished = false;
 
     Parser.join();
 
+    finished = false;
     make_graph();
     save_graph();
 */
+    graph.clear();
     
     read_graph();
     thread ranking(calc_pageRanking);
