@@ -1,8 +1,7 @@
 all: clean main
-	mv swiki ../../swiki
 
 main:
-	g++ main.cpp ../../hashlib/hash.o -std=c++11 -o ./swiki
+	g++ main.cpp ../../hashlib/hash.o -std=c++11 -o ../build/swiki
 
 clean:
-	find . -name "swiki" -exec rm -r "{}" \;
+	find ../build/ -name "swiki" -exec rm -r "{}" \;

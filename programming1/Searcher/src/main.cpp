@@ -11,8 +11,8 @@
 
 using namespace std;
 
-const double PR_K = 0.3;
-const double TF_IDF_K = 0.7;
+const double PR_K = 0.5;
+const double TF_IDF_K = 0.5;
 
 string text_dir = "";
 string index_file = "";
@@ -279,6 +279,42 @@ void get_words_from_string(string request)
     }
 }
 
+void NoArticlesException() 
+{
+    printf("Try something else please!\n");
+}
+
+
+void print_top_n(int n) 
+{
+    vector<page> pages;
+
+    for (int i = 0; i < (int)info.size(); i++) 
+    {
+        pages.push_back(page(i, info[i].pageRank));
+    }
+
+    sort(pages.begin(), pages.end());
+
+    for (int i = 0; i < n; i++) 
+    {
+        printf("%d. %s , with rating = %lf\n", i, info[pages[i].id].url.c_str(), squeze_pageRank(pages[i].rating));
+    }
+}
+
+
+bool user_wanted_to_see_top(string s) 
+{
+    if (s.substr(0, 4) == "/top") 
+    {
+        int n;
+        sscanf(s.c_str(), "/top %d", &n);
+        print_top_n(n);
+        return true;
+    }
+    return false;
+}
+
 
 void endless_loop() 
 {
@@ -292,16 +328,26 @@ void endless_loop()
         {
             break;
         }
+        if (user_wanted_to_see_top(buff)) 
+        {
+            continue;
+        }
+
         get_words_from_string(buff);
 
         if (words.size() == 0) 
         {
-            printf("Try again please!\n");
+            NoArticlesException();
             continue;
         }
 
-
         vector<int> maybe_id = get_out(); 
+        if (maybe_id.size() == 0) 
+        {
+            NoArticlesException();
+            continue;
+        }
+
         for (int i = 0; i < (int)maybe_id.size(); i++) 
         {
            printf("%d. %s\n", i, info[maybe_id[i]].url.c_str());
@@ -321,7 +367,9 @@ int main()
 {
     text_dir = "../../text_files/";
     index_file = "../../index.dat";
-    
+
+    printf("Loading, please, wait\n");    
+
     read_info();
     read_index(); // 10-15 seconds .....
 
