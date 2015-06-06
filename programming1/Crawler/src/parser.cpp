@@ -5,8 +5,24 @@
 
 using namespace std;
 
+const string download_dir = "../../html_files/";
 const string TEMPLATE = "<a href=\"/wiki/";
 const string MAIN_TITLE_CLASS = "firstHeading";
+
+
+bool compare(const string &main, const string &what, int from) 
+{
+    for (int i = 0; i < (int)what.size() && i + from < (int)main.size(); i++) 
+    {
+        if (main[from+ i] != what[i]) 
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 
 void find_urls(vector<string> &urls, string s) 
 {
@@ -16,18 +32,8 @@ void find_urls(vector<string> &urls, string s)
         if (s[i] == TEMPLATE[0]) 
         {
             temp = "";
-            bool f = true;
 
-            for (int j = 0; j < (int)min(TEMPLATE.size(), s.size()); j++) 
-            {
-                if (TEMPLATE[j] != s[i + j]) 
-                {
-                    f = false;
-                    break;
-                }
-            }
-
-            if (f) 
+            if (compare(s, TEMPLATE, i)) 
             {
                 bool trash = false;
 
@@ -60,28 +66,17 @@ void find_urls(vector<string> &urls, string s)
     }
 }
 
+
 string get_title(string line) 
 {
     string title = "";
-    if ((int)line.size() == 0) 
-    {
-        return title;
-    }
 
-    bool main_title_here;
+    bool main_title_here = false;
     for (int i = 0; i < (int)line.size(); i++) 
     {   
-        main_title_here = true;
-        for (int j = 0; i + j < (int)line.size() && j < (int)MAIN_TITLE_CLASS.size(); j++) 
+        if (compare(line, MAIN_TITLE_CLASS, i)) 
         {
-            if (line[i + j] != MAIN_TITLE_CLASS[j]) 
-            {
-                main_title_here = false;
-                break;
-            }
-        }
-        if (main_title_here) 
-        {
+            main_title_here = true;
             break;
         }
     }
@@ -155,7 +150,7 @@ vector<string> parse(string filename)
         filename = "index.html";
     }
 
-    filename = "../Downloads/" + filename; 
+    filename = download_dir + filename; 
 
     vector<string> urls;
 

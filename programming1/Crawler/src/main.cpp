@@ -16,6 +16,7 @@ using namespace std;
 
 const string PREFIX = "simple.wikipedia.org/wiki/";
 const string RANDOM = "simple.wikipedia.org/wiki/Special:Random";
+const string download_dir = "../../html_files/";
 const unsigned int MAX_QUEUE_SIZE = 1000000;
 
 queue<string> urls_to_save;
@@ -76,12 +77,12 @@ void push_in_queue(vector<string> &urls)
 
 string get_random_article() 
 {   
-    system(("wget --directory-prefix=../Downloads/temp " + RANDOM).c_str());
+    system(("wget --directory-prefix=" + download_dir + "temp/" + RANDOM).c_str());
 //    sleep(500);
     
-    string article_url= get_article_url("../Downloads/temp/Special:Random");
+    string article_url= get_article_url(download_dir + "temp/" + "Special:Random");
 
-    system("rm -rf ../Downloads/temp/*");  
+    system(("rm -rf" + article_url + "temp/*").c_str());  
     return article_url;
 }
 
@@ -121,7 +122,7 @@ void crawl()
         string current_url = PREFIX + page_title; 
         urls_to_save.pop();
 
-        string system_query = "wget --directory-prefix=../Downloads/ ";
+        string system_query = "wget --directory-prefix=" + download_dir + " ";
         system_query += "\'" + current_url + "\'";
         int query = system(system_query.c_str());
         
@@ -146,7 +147,7 @@ void crawl()
 void read_queue() 
 {
     FILE *in = NULL;
-    in = fopen("../Downloads/queue", "r");
+    in = fopen((download_dir + "queue").c_str(), "r");
 
     if (in != NULL) 
     {
@@ -170,7 +171,7 @@ void read_queue()
 void save_queue() 
 {
     FILE *out = NULL;
-    out = fopen("../Downloads/queue", "w");
+    out = fopen((download_dir + "queue").c_str(), "w");
 
     while (!urls_to_save.empty()) 
     {
@@ -183,14 +184,23 @@ void save_queue()
 }
 
 
-int main() 
+void search_and_create_file() 
 {
-    read_all_visited();
-    read_queue();
+    FILE *queue = NULL;
+    queue = fopen((download_dir + "queue").c_str(), "r");
+    if (queue == NULL) 
+    {
+        queue = fopen((download_dir + "queue").c_str(), "w"); // Creating file
+    }
 
-    thread crawler(crawl);    
+    fclose(queue);
+}
 
+
+void wait() 
+{
     char c;
+
     while (42) 
     {
         c = getchar();
@@ -201,7 +211,18 @@ int main()
             break;
         }
     }
+}
 
+
+int main() 
+{
+    search_and_create_file();
+
+    read_all_visited();
+    read_queue();
+
+    thread crawler(crawl);    
+    wait();
     crawler.join();
 
     if (!urls_to_save.empty()) 
@@ -211,4 +232,3 @@ int main()
 
     return 0;
 }
-

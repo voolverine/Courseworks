@@ -4,32 +4,12 @@
 #include <string.h>
 #include <set>
 
+#include "../../hashlib/hash.h"
+
 using namespace std;
-const long long MOD1 = 1073676287LL;
-const long long MOD2 = 2971215073LL;
-const long long base = 241;
 
-
+const string download_dir = "../../html_files/";
 set<pair<long long, long long> > looked;
-
-
-pair<long long, long long> getHash(string s) 
-{
-    long long hash1 = 0;
-    long long hash2 = 0;
-    long long power1 = 1;
-    long long power2 = 1;
-
-    for (int i = 0; i < (int)s.size(); i++) 
-    {
-        (hash1 += s[i] * power1) %= MOD1;
-        (hash2 += s[i] * power2) %= MOD2;
-        (power1 *= base) %= MOD1;
-        (power2 *= base) %= MOD2;
-    }
-
-    return make_pair(hash1, hash2);
-}
 
 
 void mark_as_looked(string url) 
@@ -84,7 +64,7 @@ vector<string> get_filenames_in_dir(string dir)
 
 void read_all_visited() 
 {
-    vector<string> all_files = get_filenames_in_dir("../Downloads/");
+    vector<string> all_files = get_filenames_in_dir(download_dir);
     looked.clear();
    
     for (int i = 0; i < (int)all_files.size(); i++) 

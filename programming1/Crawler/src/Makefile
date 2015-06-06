@@ -1,8 +1,4 @@
-all:
-	g++ main.cpp -pthread -std=c++11 -c
-	g++ checker.cpp -pthread -std=c++11 -c
-	g++ parser.cpp -pthread -std=c++11 -c
-	g++ main.o parser.o checker.o -pthread -std=c++11 -o ../build/main
+all: clean main parser checker link
 
 main:
 	-rm main.o
@@ -17,7 +13,7 @@ checker:
 	g++ checker.cpp -std=c++11 -c
 
 link:
-	g++ main.o parser.o checker.o -pthread -std=c++11 -o ../build/main
+	g++ main.o parser.o checker.o ../../hashlib/hash.o -pthread -std=c++11 -o ../build/main
 
-clear:
+clean:
 	-rm -rf ../build/*
