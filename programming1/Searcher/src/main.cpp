@@ -6,16 +6,33 @@
 #include <set>
 
 #include "../../OleanderStemmingLibrary/stemming/english_stem.h"
+#include "../../hashlib/hash.h"
 
 
 using namespace std;
 
-const double PR_K = 0.003;
-const double TF_IDF_k = 1000;
+const double PR_K = 0.3;
+const double TF_IDF_K = 0.7;
 
 string text_dir = "";
 string index_file = "";
 
+double min_pR = 0.15;
+double max_pR = 0.15;
+double min_tf_idf = 5000;
+double max_tf_idf = -5000;
+
+
+double squeze_pageRank(double pR) 
+{
+    return (10.0 / (max_pR - min_pR)) * (pR - min_pR) + 0; // Convert pR form 0 to 10
+}
+
+
+double squeze_tf_idf(double tf_idf) 
+{
+    return (10.0 / (max_tf_idf - min_tf_idf)) * (tf_idf - min_tf_idf) + 0;
+}
 
 void to_low(string &word) 
 {
@@ -30,7 +47,6 @@ void to_low(string &word)
 }
 
 
-
 class R_file 
 {
 
@@ -43,23 +59,16 @@ public:
 
     R_file(int id, double pageRank, double tf, double idf, double tf_idf, double bm25):
             id(id), pageRank(pageRank), tf(tf), idf(idf), tf_idf(tf_idf), bm25(bm25) {}
-
-    bool operator<(const R_file &second) 
-    {
-        double myWeight = pageRank * PR_K + tf_idf * TF_IDF_k;
-        double secondWeight = second.pageRank * PR_K + second.tf_idf * TF_IDF_k;
-
-        return myWeight < secondWeight;
-    }
 };
 
 
 class article 
 {
-    public:
-        long int from, to, word_count;
-        string url;
-        double pageRank;
+
+public:
+    long int from, to, word_count;
+    string url;
+    double pageRank;
 
     article(long int from, long int to, long int word_count, string url,
                 double pageRank = 10): from(from), to(to), word_count(word_count), url(url), pageRank(pageRank) {}
@@ -81,6 +90,7 @@ void read_info()
     while (fscanf(id, "%ld %ld %ld %lf %s", &from, &to, &word_count,  &pageRank, buff) != EOF) 
     {
         info.push_back(article(from, to, word_count,  buff, pageRank));
+        max_pR = max(max_pR, pageRank);
     }
 
     fclose(id);
@@ -111,7 +121,7 @@ void read_index()
     double pageRank, tf, idf, tf_idf, bm25;
     int n;
 
-    while (fscanf(in, "%lld %lld %d", &hash1, &hash2, &n) != EOF)
+    while (fscanf(in, "%lld %lld %d", &hash1, &hash2, &n) != EOF) // hash1 hash2 {number of indexes}
     {
         for (int i = 0; i < n; i++) 
         {
@@ -122,7 +132,10 @@ void read_index()
                     &idf, 
                     &tf_idf, 
                     &bm25 ); 
+            // format: id pageRank tf idf tf-idf bm25
             add_in_map(hash1, hash2, id, pageRank, tf, idf, tf_idf, bm25);
+            min_tf_idf = min(min_tf_idf, tf_idf);
+            max_tf_idf = max(max_tf_idf, tf_idf);
         }
     }
 
@@ -141,38 +154,6 @@ string steamm(string ANSIWord)
     StemEnglish(word);
 
     return string(word.begin(), word.end());
-}
-
-const long long MOD1 = 1073676287LL;
-const long long MOD2 = 2971215073LL;
-const long long base = 241;
-
-pair<long long, long long> getHash(string s) 
-{
-    while (s.size() > 0 && s[(int)s.size() - 1] == '\n') 
-    {
-        s = s.substr(0, (int)s.size() - 1);
-    }
-
-    long long hash1 = 0;
-    long long hash2 = 0;
-    long long power1 = 1;
-    long long power2 = 1;
-
-    for (int i = 0; i < (int)s.size(); i++) 
-    {
-        (hash1 += s[i] * power1) %= MOD1;
-        (hash2 += s[i] * power2) %= MOD2;
-        (power1 *= base) %= MOD1;
-        (power2 *= base) %= MOD2;
-    }
-
-    hash1 += 100LL * MOD1;
-    hash1 %= MOD1;
-    hash2 += 100LL * MOD2;
-    hash2 %= MOD2;
-
-    return make_pair(hash1, hash2);
 }
 
 class page 
@@ -197,23 +178,18 @@ vector<double> rating;
 
 void get_id(string w) 
 {
-   // for (int i = 1; i <= (int)w.size(); i++) 
-   // {
-//        string sub = w.substr(0, i); 
-        pair<long long, long long> hash = getHash(w);
-        map<pair<long long, long long>, vector<R_file> > :: iterator it = indexes.find(hash);
+    pair<long long, long long> hash = getHash(w);
+    map<pair<long long, long long>, vector<R_file> > :: iterator it = indexes.find(hash);
 
-        if (it == indexes.end()) 
-        {
-            return;
-        }
+    if (it == indexes.end()) 
+    {
+        return;
+    }
 
-        for (int i = 0; i < (int)it -> second.size(); i++) 
-        {
-            rating[it -> second[i].id] += it -> second[i].pageRank * PR_K + it -> second[i].tf_idf * TF_IDF_k;         
-        }
-    //}
-
+    for (int i = 0; i < (int)it -> second.size(); i++) 
+    {
+        rating[it -> second[i].id] += squeze_pageRank(it -> second[i].pageRank) * PR_K + squeze_tf_idf(it -> second[i].tf_idf) * TF_IDF_K;         
+    }
 }
 
 
@@ -276,6 +252,33 @@ void init()
 }
 
 
+void get_words_from_string(string request) 
+{
+    string temp = "";
+
+    for (int i = 0; i < (int)request.size(); i++) 
+    {
+        if (request[i] == ' ' || request[i] == '\n' || request[i] == '.' || request[i] == ','
+                || request[i] == ':' || request[i] == '-') 
+        {
+            if (temp.size() > 0) 
+            {
+                add(temp);
+            }
+
+            temp = "";
+            continue;
+        }
+
+        temp += request[i];
+    }
+
+    if (temp.size() > 0) 
+    {
+        add(temp);
+    }
+}
+
 
 void endless_loop() 
 {
@@ -289,28 +292,7 @@ void endless_loop()
         {
             break;
         }
-
-        int len = strlen(buff);
-        string temp = "";
-
-        for (int i = 0; i < len; i++) 
-        {
-            if (buff[i] == ' ' || buff[i] == '\n' || buff[i] == '.' || buff[i] == ',') 
-            {
-                if (temp.size() > 0) 
-                {
-                    add(temp);
-                }
-
-                temp = "";
-            }
-
-            temp += buff[i];
-        }
-        if (temp.size() > 0) 
-        {
-            add(temp);
-        }
+        get_words_from_string(buff);
 
         if (words.size() == 0) 
         {
@@ -319,9 +301,7 @@ void endless_loop()
         }
 
 
-
         vector<int> maybe_id = get_out(); 
-
         for (int i = 0; i < (int)maybe_id.size(); i++) 
         {
            printf("%d. %s\n", i, info[maybe_id[i]].url.c_str());
@@ -337,51 +317,15 @@ void endless_loop()
 }
 
 
-
-
-int main(int argc, char *argv[]) 
+int main() 
 {
     text_dir = "../../text_files/";
     index_file = "../../index.dat";
     
     read_info();
-    read_index();
-
-    if (argc >= 2) 
-    { 
-        vector<string> words;
-
-        for (int i = 1; i < argc; i++) 
-        {
-            words.push_back(steamm(argv[i]));
-            to_low(words[i - 1]);
-            get_id(words[i - 1]);
-        }
-
-        if (words.size() == 0) 
-        {
-            printf("Try again please!\n");
-            return 0;
-        }
-
-       vector<int> maybe_id = get_out(); 
-
-       for (int i = 0; i < (int)maybe_id.size(); i++) 
-       {
-           printf("%d. %s\n", i, info[maybe_id[i]].url.c_str());
-       }
-
-       char buff[10];
-       gets(buff);
-       int id;
-       sscanf(buff, "%d", &id);
-
-       print_article_with_id(maybe_id[id]);
-    }
-
+    read_index(); // 10-15 seconds .....
 
     endless_loop();
-
 
     return 0;
 }

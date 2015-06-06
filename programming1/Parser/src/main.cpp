@@ -13,7 +13,7 @@
 #include "text_parser.h"
 #include "../../hashlib/hash.h"
 
-#define EPS 1e-2
+#define EPS 1e-6
 #define DUMPING 0.85
 
 using namespace std;
@@ -21,7 +21,7 @@ using namespace std;
 string html_dir;
 string text_dir;
 
-const int PR_TIMES = 100; // smth about 33min
+const int PR_TIMES = 1000;
 
 bool finished = false;
 
@@ -254,7 +254,8 @@ void make_graph()
 
     for (int i = 0; i < (int)info.size(); i++) 
     {
-        int current_id = get_id(info[i].url);
+        int current_id = i;
+        
         if (current_id != -1) {
             vector<string> all_urls = get_all_urls("../../html_files/" + info[i].url);
 
@@ -275,6 +276,8 @@ void make_graph()
             printf("%lf percents of graph made\n", (double)i * 100.0 / (double)info.size());
         }
     }
+
+    printf("Graph already made.\n");
 }
 
 
@@ -308,6 +311,7 @@ void bfs(int x)
                 if (!visited[v]) 
                 {
                     q.push(v);
+                    visited[v] = true;
                 }
             }
         }
@@ -333,13 +337,9 @@ void calc_pageRanking()
             {
                 return;
             }
-
         }
 
-        if (j % 5 == 0) 
-        {
-            printf("%lf percents of ranking complited\n", (double)j / (double)PR_TIMES);
-        }
+        printf("%lf percents of ranking complited\n", (double)j);
     }
 
     printf("Rating already finished.\n   Press Enter.\n");
@@ -411,14 +411,16 @@ int main(int argc, char *argv[])
     read_info();
 
     //remove_all_copies(html_dir);
-    thread Parser(Parse_all_files); // Parsing files in html directory to text file in text directory
+    /*thread Parser(Parse_all_files); // Parsing files in html directory to text file in text directory
     wait();
     Parser.join();
 
 
     finished = false;
-    make_graph(); // making graph
-    save_graph();
+    save_info();
+*/
+//    make_graph(); // making graph
+  //  save_graph();
     graph.clear();
    
 

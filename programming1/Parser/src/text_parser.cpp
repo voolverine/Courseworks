@@ -25,7 +25,6 @@ vector<string> get_all_urls(string filename)
     html_file = fopen(filename.c_str(), "r");
    
     char buff[500];
-
     if (html_file != NULL) 
     {
         while (fgets(buff, 500, html_file) != NULL)  
@@ -166,6 +165,47 @@ void remove_whitelines(string &s)
 }
 
 
+string get_html_file_title(string file) 
+{
+    string title;
+
+    int i;
+    bool find = false;
+    for (i = 0; i < (int)file.size(); i++) 
+    {
+        if (find_prefix(MAIN_TITLE_CLASS, file, i)) 
+        {
+            find = true;
+            break;
+        }
+    }
+
+    if (find) 
+    {
+        bool between_tags = false;
+
+        for (; i < (int)file.size() - 1; i++) // -1 to remove \n
+        {
+            if (file[i] == '<') 
+            {
+                between_tags = false;
+                break;
+            }
+            if (between_tags) 
+            {
+                title += file[i];
+            }
+            if (file[i] == '>') 
+            {
+                between_tags = true;
+            }
+        }
+    }
+
+    return title;
+}
+
+
 
 pair<string, string> parse_in_article(string filename) 
 {
@@ -179,7 +219,7 @@ pair<string, string> parse_in_article(string filename)
         file += buf;
     }
     
-    string title = get_title(file);
+    string title = get_html_file_title(file);
     file = get_main_text(file);
     file = remove_tags(file); 
     file = remove_buttons(file);

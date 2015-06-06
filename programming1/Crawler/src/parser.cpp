@@ -14,7 +14,7 @@ bool compare(const string &main, const string &what, int from)
 {
     for (int i = 0; i < (int)what.size() && i + from < (int)main.size(); i++) 
     {
-        if (main[from+ i] != what[i]) 
+        if (main[from + i] != what[i]) 
         {
             return false;
         }
@@ -27,6 +27,7 @@ bool compare(const string &main, const string &what, int from)
 void find_urls(vector<string> &urls, string s) 
 {
     string temp = "";
+
     for (int i = 0; i < (int)s.size(); i++) 
     {
         if (s[i] == TEMPLATE[0]) 
