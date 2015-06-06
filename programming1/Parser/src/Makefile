@@ -1,7 +1,7 @@
 all: clean main text_parser link
 
 link:
-	g++ ../build/main.o ../build/text_parser.o -std=c++11 -o ../build/main -pthread
+	g++ ../build/main.o ../build/text_parser.o ../../hashlib/hash.o ../../Crawler/src/parser.o -std=c++11 -o ../build/main -pthread
 
 main:
 	g++ main.cpp -c -std=c++11 -o ../build/main.o -pthread

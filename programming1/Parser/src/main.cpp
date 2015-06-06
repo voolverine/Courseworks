@@ -11,13 +11,17 @@
 #include <ctime>
 
 #include "text_parser.h"
+#include "../../hashlib/hash.h"
 
-#define EPS 3e-1
+#define EPS 1e-2
+#define DUMPING 0.85
 
 using namespace std;
 
 string html_dir;
 string text_dir;
+
+const int PR_TIMES = 100; // smth about 33min
 
 bool finished = false;
 
@@ -25,7 +29,6 @@ class edge
 {
 
 public:
-
     int to;
     double flow;
 
@@ -42,13 +45,14 @@ public:
 
 class article 
 {
-    public:
-        long int from, to, word_count;
-        string url;
-        double pageRank;
+
+public:
+    long int from, to, word_count;
+    string url;
+    double pageRank;
 
     article(long int from, long int to, long int word_count, string url,
-                double pageRank = 10): from(from), to(to), word_count(word_count), url(url), pageRank(pageRank) {}
+                    double pageRank = (1 - DUMPING)): from(from), to(to), word_count(word_count), url(url), pageRank(pageRank) {}
 
 };
 
@@ -57,36 +61,8 @@ map<pair<long long, long long>, int> saved; // url_hash -> id
 vector<article> info; // id -> article info
 vector<vector<edge> > graph; // graph from id
 
-const long long MOD1 = 1073676287LL;
-const long long MOD2 = 2971215073LL;
-const long long base = 241;
-
 
 FILE *articles = NULL;
-
-
-pair<long long, long long> getHash(string s) 
-{
-    while (s.size() > 0 && s[(int)s.size() - 1] == '\n') 
-    {
-        s = s.substr(0, (int)s.size() - 1);
-    }
-
-    long long hash1 = 0;
-    long long hash2 = 0;
-    long long power1 = 1;
-    long long power2 = 1;
-
-    for (int i = 0; i < (int)s.size(); i++) 
-    {
-        (hash1 += s[i] * power1) %= MOD1;
-        (hash2 += s[i] * power2) %= MOD2;
-        (power1 *= base) %= MOD1;
-        (power2 *= base) %= MOD2;
-    }
-
-    return make_pair(hash1, hash2);
-}
 
 
 int get_id(string s) 
@@ -191,7 +167,7 @@ void Parse_all_files()
             continue;
         }
         
-        pair<string, string> text = parse(html_dir + all_files[i]);
+        pair<string, string> text = parse_in_article(html_dir + all_files[i]);
 
         if (!already_saved(get_url_from_title(text.first))) 
         {
@@ -258,7 +234,7 @@ void remove_all_copies(string dir)
 
     for (int i = 0; i < (int)all_files.size(); i++) 
     {
-        pair<string, string> file = parse(html_dir + all_files[i]);
+        pair<string, string> file = parse_in_article(html_dir + all_files[i]);
         file.first = get_url_from_title(file.first);
         system(("mv \"" + html_dir + all_files[i] + "\" \"" + html_dir + file.first.c_str() + "\"").c_str());
     }
@@ -285,30 +261,31 @@ void make_graph()
                 }
             }
 
-            graph[current_id].push_back(edge(rand() % (int)info.size(), 0));
+            graph[current_id].push_back(edge(rand() % (int)info.size(), 0)); // add some magic
         }
 
         if (i % 1000 == 0) // Show status
         {
             printf("%lf percents of graph made\n", (double)i * 100.0 / (double)info.size());
         }
-
-
     }
 }
 
 
 void bfs(int x) 
 {
+    vector<bool> visited = vector<bool> (info.size(), false);
+
     queue<int> q;
     q.push(x);
 
     while (!q.empty()) 
     {
         int u = q.front();
+        visited[u] = true;
         q.pop();
 
-        double could_add = (double)info[u].pageRank / (double)graph[u].size();
+        double could_add = (double)info[u].pageRank * DUMPING / (double)graph[u].size();
 
         for (int i = 0; i < (int)graph[u].size(); i++)
         {
@@ -322,12 +299,11 @@ void bfs(int x)
 
                 graph[u][i].change_flow(could_add);
 
-                if ((int)q.size() < 1000) 
+                if (!visited[v]) 
                 {
                     q.push(v);
                 }
             }
-            
         }
 
         if (finished) 
@@ -340,21 +316,27 @@ void bfs(int x)
 }
 
 
-
 void calc_pageRanking() 
 {
-    for (int i = 0; i < (int)graph.size(); i++) 
+    for (int j = 0; j < PR_TIMES; j++) 
     {
-        printf("Now we are trying to bfs from id = %d\n", i);
-        bfs(i);
-        if (finished) 
+        for (int i = 0; i < (int)graph.size(); i++) 
         {
-            break;
+            bfs(i);
+            if (finished) 
+            {
+                return;
+            }
+
         }
 
+        if (j % 5 == 0) 
+        {
+            printf("%lf percents of ranking complited\n", (double)j / (double)PR_TIMES);
+        }
     }
 
-    printf("Rating already finished.\n Press Enter.\n");
+    printf("Rating already finished.\n   Press Enter.\n");
 }
 
 
@@ -423,24 +405,24 @@ int main(int argc, char *argv[])
     read_info();
 
     //remove_all_copies(html_dir);
-   /* thread Parser(Parse_all_files); 
+    thread Parser(Parse_all_files); // Parsing files in html directory to text file in text directory
     wait();
-
-
     Parser.join();
 
+
     finished = false;
-    make_graph();
+    make_graph(); // making graph
     save_graph();
-*/
     graph.clear();
-    
-    read_graph();
+   
+
+    read_graph(); // pageRank calculation
     thread ranking(calc_pageRanking);
     wait();
-
     ranking.join();
-    save_graph();
+
+
+    save_graph(); // Finishing session
     save_info();
     
     fclose(articles);
