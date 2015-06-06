@@ -196,7 +196,13 @@ void add_to_saved(int id, string url)
 
 void read_info() 
 {
-    FILE *id = fopen((text_dir + "id.dat").c_str(), "r");
+    FILE *id = NULL;
+    id = fopen((text_dir + "id.dat").c_str(), "r");
+    if (id == NULL) 
+    {
+        return;
+    }
+
     long int from, to, word_count;
     double pageRank;
     char buff[200];
