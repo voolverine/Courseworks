@@ -32,7 +32,6 @@ public class MouseHandler {
             public void handle(MouseEvent event) {
                 position.setX((int) event.getX());
                 position.setY((int) event.getY());
-//                System.out.println(position.getX());
             }
         });
     }

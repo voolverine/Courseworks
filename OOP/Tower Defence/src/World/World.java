@@ -10,6 +10,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -27,6 +28,8 @@ public class World {
     public Rectangle map_focus;
     @FXML
     public Pane pane;
+    @FXML
+    public GridPane score_panel;
     @FXML
     private Canvas canvas;
 
@@ -68,7 +71,7 @@ public class World {
         screen = new Screen(new Position(), mouseHandler);
         map = new Map(imageView, screen, map_focus);
         mapObjects = new ArrayList<DrawableObject> ();
-        scorePanel = new ScorePanel();
+        scorePanel = new ScorePanel(score_panel);
         shopPanel = new ShopPanel();
 
         mapObjects.add(scorePanel);
