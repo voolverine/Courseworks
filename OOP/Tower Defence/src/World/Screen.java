@@ -1,5 +1,6 @@
 package World;
 
+import World.Panels.Map;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -15,13 +16,32 @@ public class Screen {
     public static final Integer ImageID = new Integer(1000);
 
     private Position position;
+
+    public Position getPosition() {
+       return position;
+    }
+
     private int map_width;
     private int map_height;
     private int screen_width;
     private int screen_height;
-    private MouseHandler mouseHandler;
 
-    private static int step = 15;
+    public int getMap_width() {
+       return map_width;
+   }
+    public int getMap_height() {
+        return map_height;
+    }
+
+    public int getWidth() {
+        return screen_width;
+    }
+    public int getHeight() {
+        return screen_height;
+    }
+
+    private MouseHandler mouseHandler;
+    private static int step = 30;
 
     public Screen(Position position, MouseHandler mouseHandler) {
         this.position = position;
@@ -41,9 +61,6 @@ public class Screen {
         }
     }
     private void moveDown() {
-        System.out.println(position.getY());
-        System.out.println(screen_height);
-
         int new_y = position.getY() + step;
         if (new_y >= 0 && new_y + screen_height < map_height) {
             position.moveDown(step);

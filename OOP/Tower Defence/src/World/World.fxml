@@ -2,7 +2,15 @@
 
 <?import javafx.scene.canvas.Canvas?>
 
-<GridPane fx:controller="World.World"
-          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+
+<?import javafx.scene.shape.Rectangle?>
+<Pane fx:controller="World.World"
+      fx:id="pane"
+      xmlns:fx="http://javafx.com/fxml" >
     <Canvas fx:id="canvas" />
-</GridPane>
+    <ImageView fx:id="imageView" />
+    <Rectangle fx:id="map_focus" />
+
+</Pane>

@@ -8,8 +8,11 @@ import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import sun.applet.AppletListener;
 
 import java.util.ArrayList;
@@ -19,7 +22,14 @@ import java.util.ArrayList;
  */
 public class World {
     @FXML
+    public ImageView imageView;
+    @FXML
+    public Rectangle map_focus;
+    @FXML
+    public Pane pane;
+    @FXML
     private Canvas canvas;
+
     private GraphicsContext gc;
 
     private MouseHandler mouseHandler;
@@ -54,12 +64,12 @@ public class World {
         canvas.setHeight(ApplicationGUI.Main.CurrentResolutionH);
         canvas.setWidth(ApplicationGUI.Main.CurrentResolutionW);
 
-        mouseHandler = new MouseHandler(canvas);
+        mouseHandler = new MouseHandler(pane);
         screen = new Screen(new Position(), mouseHandler);
+        map = new Map(imageView, screen, map_focus);
         mapObjects = new ArrayList<DrawableObject> ();
         scorePanel = new ScorePanel();
         shopPanel = new ShopPanel();
-        map = new Map();
 
         mapObjects.add(scorePanel);
         mapObjects.add(shopPanel);
