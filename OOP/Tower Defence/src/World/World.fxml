@@ -19,17 +19,21 @@
        <Canvas fx:id="canvas" />
        <GridPane fx:id="score_panel">
             <columnConstraints>
-                <ColumnConstraints percentWidth="33.3"/>
-                <ColumnConstraints percentWidth="33.3"/>
-                <ColumnConstraints percentWidth="33.3"/>
+                <ColumnConstraints percentWidth="25" minWidth="250"/>
+                <ColumnConstraints percentWidth="25" maxWidth="250"/>
+                <ColumnConstraints percentWidth="25" minWidth="250"/>
+                <ColumnConstraints percentWidth="25" maxWidth="250"/>
             </columnConstraints>
-           <StackPane GridPane.rowIndex="0" GridPane.columnIndex="0" fx:id="Credits">
+           <StackPane GridPane.rowIndex="0" GridPane.columnIndex="0" fx:id="fps" >
+               <Label fx:id="gamefps" />
+           </StackPane>
+           <StackPane GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="Credits">
                <Label text="Credits"/>
            </StackPane>
-           <StackPane GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="time">
+           <StackPane GridPane.rowIndex="0" GridPane.columnIndex="2" fx:id="time">
                 <Label text="Time" />
            </StackPane>
-           <StackPane GridPane.rowIndex="0" GridPane.columnIndex="2" fx:id="progress_bar">
+           <StackPane GridPane.rowIndex="0" GridPane.columnIndex="3" fx:id="progress_bar">
                 <Label text="Progress" />
            </StackPane>
 

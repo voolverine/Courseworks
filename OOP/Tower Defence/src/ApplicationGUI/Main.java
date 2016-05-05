@@ -1,5 +1,6 @@
 package ApplicationGUI;
 
+import com.sun.javafx.perf.PerformanceTracker;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -19,11 +20,11 @@ public class Main extends Application {
     private static Parent root;
     private static Scene scene;
 
+
     public void playWorld() {
         try {
             root = FXMLLoader.load(getClass().getResource("/World/World.fxml"));
             scene.setRoot(root);
-
 
         } catch (Exception e) {
             System.out.println(e);

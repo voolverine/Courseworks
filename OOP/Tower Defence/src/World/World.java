@@ -3,11 +3,14 @@ package World;
 import World.Panels.Map;
 import World.Panels.ScorePanel;
 import World.Panels.ShopPanel;
+import com.sun.javafx.perf.PerformanceTracker;
+import com.sun.javafx.runtime.SystemProperties;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -17,6 +20,10 @@ import javafx.scene.shape.Rectangle;
 import sun.applet.AppletListener;
 
 import java.util.ArrayList;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 /**
  * Created by volverine on 4/19/16.
@@ -60,6 +67,17 @@ public class World {
         }
     }
 
+    public static double FPS = 0;
+    long afterPrevFPS = 0;
+    long StrartNanoFPS = 0;
+    long curNanoFPS = 0;
+
+    public void showFPS() {
+        Label l = (Label)score_panel.lookup("#gamefps");
+        l.setText(String.format("fps = %f", FPS));
+        FPS = 0;
+        StrartNanoFPS = System.nanoTime();
+    }
 
     public void initialize() {
         InitGraphics();
@@ -76,15 +94,21 @@ public class World {
 
         mapObjects.add(scorePanel);
         mapObjects.add(shopPanel);
-        mapObjects.add(map);
-
-
+        mapObjects.add(map);/*
+        Properties prop = System.getProperties();
+        prop.setProperty("javafx.animation.fullspeed", "true");
+*/
         new AnimationTimer() {
             public void handle(long startNanoTime) {
                 BackgroundRedraw();
                 redrawDrawable();
 
-                while (System.nanoTime() - startNanoTime < Constants.AVERAGE_TICK) {}
+               // while (System.nanoTime() - startNanoTime < Constants.AVERAGE_TICK) {}
+                FPS += 1;
+                curNanoFPS = System.nanoTime();
+                if (Math.abs(StrartNanoFPS - curNanoFPS) >= 1000000000.0) {
+                    showFPS();
+                }
             }
         }.start();
     }
