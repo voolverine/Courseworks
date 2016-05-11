@@ -1,22 +1,21 @@
-package World.Towers;
+package World.Enemies;
 
 import World.DrawableObject;
 import World.HealthPoints;
 import World.Position;
-import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 
 /**
- * Created by volverine on 4/19/16.
+ * Created by volverine on 5/11/16.
  */
-public class Tower extends DrawableObject {
+public class Enemy extends DrawableObject {
     protected HealthPoints healthPoints;
 
     public HealthPoints getHealthPoints() {
         return healthPoints;
     }
 
-    public Tower(Position position, HealthPoints healthPoints) {
+    public Enemy(Position position, HealthPoints healthPoints) {
         super(position);
         this.healthPoints = healthPoints;
     }

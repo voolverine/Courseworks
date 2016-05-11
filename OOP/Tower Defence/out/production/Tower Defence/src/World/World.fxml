@@ -20,9 +20,11 @@
        <GridPane fx:id="score_panel">
             <columnConstraints>
                 <ColumnConstraints percentWidth="25" minWidth="250"/>
+                <ColumnConstraints percentWidth="25" minWidth="250"/>
             </columnConstraints>
 
-            <Label GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="fps"/>
+            <Label GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="fps_label"/>
+            <Label GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="money_label" />
        </GridPane>
    </children>
 

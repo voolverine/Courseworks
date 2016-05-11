@@ -20,4 +20,5 @@ public class DrawableObject {
 
 
     public void Draw(GraphicsContext gc) {}
+    public void Action() {}
 }
