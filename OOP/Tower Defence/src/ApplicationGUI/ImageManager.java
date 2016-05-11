@@ -20,7 +20,6 @@ public class ImageManager {
 //        Images.put(World.Towers.ImageID, new Image("/Images/tower.png"));
 //        Images.put(Enemy.ImageID, new Image("/Images/enemy.png"));
 //        Images.put(Bullet.ImageID, new Image("/Images/bullet.png"));
-        Images.put(World.Screen.ImageID, new Image("/Images/level0.png"));
     }
 
     public Image getImage(Integer id) {

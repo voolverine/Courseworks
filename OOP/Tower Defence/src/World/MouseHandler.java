@@ -1,6 +1,7 @@
 package World;
 
 import ApplicationGUI.Main;
+import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
@@ -39,19 +40,6 @@ public class MouseHandler {
     public ArrayList<String> getCurrentState() {
         ArrayList<String> response = new ArrayList<String> ();
 
-        if (position.getX() == 0) {
-            response.add("MOVE_SCREEN_LEFT");
-        } else
-        if (position.getX() == ApplicationGUI.Main.CurrentResolutionW - 1) {
-            response.add("MOVE_SCREEN_RIGHT");
-        }
-
-        if (position.getY() == 0) {
-            response.add("MOVE_SCREEN_UP");
-        } else
-        if (position.getY() == ApplicationGUI.Main.CurrentResolutionH - 1) {
-            response.add("MOVE_SCREEN_DOWN");
-        }
 
         return response;
     }

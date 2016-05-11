@@ -1,6 +1,7 @@
 package ApplicationGUI;
 
 import com.sun.javafx.perf.PerformanceTracker;
+import com.sun.javafx.tk.*;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +12,9 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import java.awt.*;
+import java.awt.Toolkit;
 
 public class Main extends Application {
     public static int CurrentResolutionH;
@@ -36,9 +40,10 @@ public class Main extends Application {
         fxmlLoader = new FXMLLoader(getClass().getResource("/ApplicationGUI/Application.fxml"));
         root = fxmlLoader.load();
 
-        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        CurrentResolutionH = (int)primaryScreenBounds.getMaxY();
-        CurrentResolutionW = (int)primaryScreenBounds.getMaxX();
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        CurrentResolutionH = (int)screenSize.getHeight();
+        CurrentResolutionW = (int)screenSize.getWidth();
 
         scene = new Scene(root, CurrentResolutionW, CurrentResolutionH);
 
