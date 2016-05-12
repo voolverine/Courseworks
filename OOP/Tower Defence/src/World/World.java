@@ -20,6 +20,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 
@@ -59,8 +60,8 @@ public class World {
         pane.getChildren().add(tobuy_ImageView);
         shop = new Shop();
 
-        shop.addProduct(new Product("LightUnitTower", 100, LightUnitTower.ImageID));
-        shop.addProduct(new Product("MoneyTower", 100, MoneyTower.ImageID));
+        shop.addProduct(new Product("World.Towers.LightUnitTower", 100, LightUnitTower.ImageID));
+        shop.addProduct(new Product("World.Towers.MoneyTower", 100, MoneyTower.ImageID));
 
         for (Product product: shop.getProducts()) {
             shop_panel.getChildren().add(product.getImageView());
@@ -103,7 +104,7 @@ public class World {
 
     public boolean isFree(int x, int y) {
         /* TODO */
-        return false;
+        return true;
     }
 
 
@@ -115,6 +116,7 @@ public class World {
                 return;
             } else {
                 productGhost = new ProductGhost(tobuy_ImageView, product_to_buy.getImageID(), mouseHandler);
+                mouseHandler.getState(); // init mouse state
             }
         }
 
@@ -122,15 +124,22 @@ public class World {
             MouseEvent action = mouseHandler.getState();
 
             if (action != null) {
-                /* TODO */
-                int click_x = (int)action.getX();
-                int click_y = (int)action.getY();
+                Image tower_img = ImageManager.getInstance().getImage(product_to_buy.getImageID());
+                int click_x = (int)action.getX() - (int)tower_img.getWidth() / 2;
+                int click_y = (int)action.getY() - (int)tower_img.getHeight() / 2;
 
                 if (isFree(click_x, click_y)) {
                     productGhost.setNeed_to_draw(false);
+
+                    try {
+                        Class<?> tower_class = Class.forName(product_to_buy.getClass_name());
+                        Constructor<?> construct = tower_class.getConstructor(Position.class, HealthPoints.class);
+                        mapObjects.add((DrawableObject)construct.newInstance(new Position(click_x, click_y), new HealthPoints(500)));
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+
                     product_to_buy = null;
-                } else {
-                    /* TODO */
                 }
             }
         } else {

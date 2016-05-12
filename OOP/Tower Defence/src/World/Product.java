@@ -58,7 +58,7 @@ public class Product {
             @Override
             public void handle(MouseEvent event) {
                 state = true;
-                //System.out.println(String.format("%s clicked", class_name));
+                System.out.println(String.format("%s clicked", class_name));
             }
         });
     }

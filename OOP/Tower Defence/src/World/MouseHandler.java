@@ -30,6 +30,7 @@ public class MouseHandler {
         pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                returned = false;
                 action = mouseEvent;
             }
         });

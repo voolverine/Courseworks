@@ -31,6 +31,7 @@ public class ProductGhost {
             imageView.setOpacity(1);
         } else {
             imageView.setOpacity(0);
+            return;
         }
 
         Image product = ImageManager.getInstance().getImage(ImageID);
