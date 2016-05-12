@@ -31,7 +31,7 @@ public class World {
     public Label money_label;
     public Pane pane;
     public Canvas canvas;
-    public FlowPane shop;
+    public FlowPane shop_panel;
 
     private GraphicsContext gc;
 
@@ -41,7 +41,8 @@ public class World {
     public static Integer ImageID = new Integer(0);
 
 // gaming variables from here
-    MainTower mainTower;
+    public MainTower mainTower;
+    public Shop shop;
 
 
     public void InitGraphics() {
@@ -49,13 +50,14 @@ public class World {
         canvas.setHeight(ApplicationGUI.Main.CurrentResolutionH);
         canvas.setWidth(ApplicationGUI.Main.CurrentResolutionW);
         gc = canvas.getGraphicsContext2D();
+        shop = new Shop();
 
+        shop.addProduct(new Product("LightUnitTower", 100, LightUnitTower.ImageID));
+        shop.addProduct(new Product("MoneyTower", 100, MoneyTower.ImageID));
 
-        ImageView lightUnitTowerImg = new ImageView(ImageManager.getInstance().getImage(LightUnitTower.ImageID));
-        shop.getChildren().add(lightUnitTowerImg);
-
-        ImageView moneyTowerImg = new ImageView(ImageManager.getInstance().getImage(MoneyTower.ImageID));
-        shop.getChildren().add(moneyTowerImg);
+        for (Product product: shop.getProducts()) {
+            shop_panel.getChildren().add(product.getImageView());
+        }
     }
 
 
