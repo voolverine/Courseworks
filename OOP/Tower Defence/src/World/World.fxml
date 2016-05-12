@@ -15,16 +15,25 @@
 <?import javafx.scene.control.Label?>
 <Pane fx:id="pane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="World.World">
    <children>
-   
-       <Canvas fx:id="canvas" />
-       <GridPane fx:id="score_panel">
+
+       <Canvas fx:id="canvas"/>
+
+       <GridPane fx:id="score_panel" minWidth="1280" style="-fx-border-width: 2; -fx-border-color: black; -fx-border-style: dashed;">
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
             <columnConstraints>
-                <ColumnConstraints percentWidth="25" minWidth="250"/>
-                <ColumnConstraints percentWidth="25" minWidth="250"/>
+                <ColumnConstraints percentWidth="6" halignment="CENTER"/>
+                <ColumnConstraints percentWidth="30" halignment="CENTER"/>
+                <ColumnConstraints percentWidth="34" halignment="CENTER"/>
+                <ColumnConstraints percentWidth="30" halignment="CENTER"/>
             </columnConstraints>
 
             <Label GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="fps_label"/>
             <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="money_label" />
+            <FlowPane GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-border-width: 1; -fx-border-color: red; -fx-border-style: dashed;" minHeight="400"
+                    fx:id = "shop" orientation="VERTICAL"/>
        </GridPane>
    </children>
 

@@ -10,7 +10,7 @@ import javafx.scene.image.Image;
  * Created by volverine on 5/11/16.
  */
 public class LightUnitEnemy extends Enemy {
-    private Integer ImageID = new Integer(2000);
+    public static Integer ImageID = new Integer(2000);
 
     public LightUnitEnemy(Position position, HealthPoints healthPoints) {
         super(position, healthPoints);
