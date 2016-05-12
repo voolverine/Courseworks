@@ -16,8 +16,14 @@ import java.util.ArrayList;
  * Created by volverine on 3/23/16.
  */
 public class MouseHandler {
-    private MouseEvent action;
+    private MouseEvent action = null;
+    private boolean returned = false;
     private Position position = new Position(1, 1);
+
+
+    public Position getPosition() {
+        return position;
+    }
 
 
     public MouseHandler(Pane pane) {
@@ -37,10 +43,17 @@ public class MouseHandler {
         });
     }
 
-    public ArrayList<String> getCurrentState() {
-        ArrayList<String> response = new ArrayList<String> ();
 
+    public MouseEvent getState() {
+        if (action != null) {
+            if (returned) {
+                action = null;
+            } else {
+                returned = true;
+                return action;
+            }
+        }
 
-        return response;
+        return null;
     }
 }

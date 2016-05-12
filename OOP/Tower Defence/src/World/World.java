@@ -15,6 +15,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -35,14 +36,16 @@ public class World {
 
     private GraphicsContext gc;
 
-    private MouseHandler mouseHandler;
-
     private ArrayList<DrawableObject> mapObjects;
     public static Integer ImageID = new Integer(0);
 
 // gaming variables from here
     public MainTower mainTower;
     public Shop shop;
+    private Product product_to_buy = null;
+    private MouseHandler mouseHandler;
+    private ImageView tobuy_ImageView;
+    private ProductGhost productGhost;
 
 
     public void InitGraphics() {
@@ -50,6 +53,10 @@ public class World {
         canvas.setHeight(ApplicationGUI.Main.CurrentResolutionH);
         canvas.setWidth(ApplicationGUI.Main.CurrentResolutionW);
         gc = canvas.getGraphicsContext2D();
+
+        tobuy_ImageView = new ImageView();
+        tobuy_ImageView.setOpacity(1);
+        pane.getChildren().add(tobuy_ImageView);
         shop = new Shop();
 
         shop.addProduct(new Product("LightUnitTower", 100, LightUnitTower.ImageID));
@@ -71,11 +78,10 @@ public class World {
         for (DrawableObject obj: mapObjects) {
             obj.Draw(gc);
         }
-    }
 
-
-    public void Action() {
-
+        if (productGhost != null) {
+            productGhost.Draw();
+        }
     }
 
 
@@ -95,6 +101,44 @@ public class World {
     }
 
 
+    public boolean isFree(int x, int y) {
+        /* TODO */
+        return false;
+    }
+
+
+    public void checkShop() {
+        if (product_to_buy == null) {
+            product_to_buy = shop.getState();
+
+            if (product_to_buy == null) {
+                return;
+            } else {
+                productGhost = new ProductGhost(tobuy_ImageView, product_to_buy.getImageID(), mouseHandler);
+            }
+        }
+
+        if (mainTower.getBank().isEnough(product_to_buy.getPrice())) {
+            MouseEvent action = mouseHandler.getState();
+
+            if (action != null) {
+                /* TODO */
+                int click_x = (int)action.getX();
+                int click_y = (int)action.getY();
+
+                if (isFree(click_x, click_y)) {
+                    productGhost.setNeed_to_draw(false);
+                    product_to_buy = null;
+                } else {
+                    /* TODO */
+                }
+            }
+        } else {
+            product_to_buy = null;
+        }
+    }
+
+
     public void initialize() {
         InitGraphics();
 
@@ -111,10 +155,10 @@ public class World {
             public void handle(long startNanoTime) {
                 BackgroundRedraw();
                 redrawDrawable();
-                Action();
                 updateMoney();
 
 
+                checkShop();
                 FPS += 1;
                 fps_nanoTimer_current = System.nanoTime();
                 if (Math.abs(fps_nanoTimer_start - fps_nanoTimer_current) >= 1000000000.0) {

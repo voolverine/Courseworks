@@ -16,7 +16,12 @@ public class MainTower extends Tower {
 
     public MainTower(Position position, HealthPoints healthPoints) {
         super(position, healthPoints);
-        bank = new Bank();
+        bank = new Bank(1000);
+    }
+
+
+    public Bank getBank() {
+        return bank;
     }
 
 

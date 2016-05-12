@@ -21,4 +21,14 @@ public class Shop {
     public Shop() {
         all_products = new ArrayList<Product> ();
     }
+
+    public Product getState() {
+        for (Product product: all_products) {
+            if (product.getState()) {
+                return product;
+            }
+        }
+
+        return null;
+    }
 }
