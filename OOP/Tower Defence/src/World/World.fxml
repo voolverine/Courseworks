@@ -24,7 +24,7 @@
             </columnConstraints>
 
             <Label GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="fps_label"/>
-            <Label GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="money_label" />
+            <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="money_label" />
        </GridPane>
    </children>
 
