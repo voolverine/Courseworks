@@ -18,6 +18,10 @@ public class Bank {
         return money >= price;
     }
 
+    public int getMoney() {
+        return money;
+    }
+
     public void buy(int price) {
         money -= price;
     }

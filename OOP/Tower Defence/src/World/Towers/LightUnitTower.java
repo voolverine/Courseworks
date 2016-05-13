@@ -21,10 +21,10 @@ public class LightUnitTower extends Tower {
 
     public void Draw(GraphicsContext gc) {
         Image img = ImageManager.getInstance().getImage(ImageID);
-        int delta_width = (int)img.getWidth() / 2;
-        int delta_height = (int)img.getHeight() / 2;
+        int image_x = position.getX() - (int)img.getWidth() / 2;
+        int image_y = position.getY() - (int)img.getHeight() / 2;
 
-        gc.drawImage(img, this.getPosition().getX(), this.getPosition().getY());
+        gc.drawImage(img, image_x, image_y);
     }
 
     public void Action() {}

@@ -32,8 +32,8 @@
 
             <Label GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="fps_label"/>
             <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="money_label" />
-            <FlowPane GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-border-width: 1; -fx-border-color: red; -fx-border-style: dashed;" minHeight="400"
-                    fx:id = "shop_panel" orientation="VERTICAL"/>
+            <FlowPane GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-background-color: grey; -fx-border-width: 1; -fx-border-color: red; -fx-border-style: dashed;" minHeight="400"
+                    fx:id = "shop_panel" orientation="VERTICAL" />
        </GridPane>
    </children>
 

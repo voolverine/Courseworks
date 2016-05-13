@@ -46,6 +46,7 @@ public class World {
     private Product product_to_buy = null;
     private MouseHandler mouseHandler;
     private ImageView tobuy_ImageView;
+    private ImageView delete_obj;
     private ProductGhost productGhost;
 
 
@@ -81,7 +82,7 @@ public class World {
         }
 
         if (productGhost != null) {
-            productGhost.Draw();
+            productGhost.Draw(gc);
         }
     }
 
@@ -98,14 +99,9 @@ public class World {
     }
 
     public void updateMoney() {
-        money_label.setText(String.format("Money = "));
+        money_label.setText(String.format("Money = %d", mainTower.getBank().getMoney()));
     }
 
-
-    public boolean isFree(int x, int y) {
-        /* TODO */
-        return true;
-    }
 
 
     public void checkShop() {
@@ -115,21 +111,24 @@ public class World {
             if (product_to_buy == null) {
                 return;
             } else {
-                productGhost = new ProductGhost(tobuy_ImageView, product_to_buy.getImageID(), mouseHandler);
+                productGhost = new ProductGhost(new Position(-1, -1), tobuy_ImageView,
+                                                    product_to_buy.getImageID(), mouseHandler);
                 mouseHandler.getState(); // init mouse state
             }
         }
+        productGhost.updateCanBeBuild(mapObjects);
 
         if (mainTower.getBank().isEnough(product_to_buy.getPrice())) {
             MouseEvent action = mouseHandler.getState();
 
-            if (action != null) {
-                Image tower_img = ImageManager.getInstance().getImage(product_to_buy.getImageID());
-                int click_x = (int)action.getX() - (int)tower_img.getWidth() / 2;
-                int click_y = (int)action.getY() - (int)tower_img.getHeight() / 2;
+            if (action != null && productGhost.canBuild()) {
+                int click_x = (int)action.getX();
+                int click_y = (int)action.getY();
 
-                if (isFree(click_x, click_y)) {
                     productGhost.setNeed_to_draw(false);
+                    productGhost.Disable();
+                    productGhost = null;
+
 
                     try {
                         Class<?> tower_class = Class.forName(product_to_buy.getClass_name());
@@ -139,10 +138,11 @@ public class World {
                         System.out.println(e);
                     }
 
+                    mainTower.getBank().buy(product_to_buy.getPrice());
                     product_to_buy = null;
-                }
             }
         } else {
+            productGhost.setNeed_to_draw(false);
             product_to_buy = null;
         }
     }
