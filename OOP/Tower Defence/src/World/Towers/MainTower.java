@@ -1,10 +1,13 @@
 package World.Towers;
 
 import ApplicationGUI.ImageManager;
+import World.DrawableObject;
 import World.HealthPoints;
 import World.Position;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+
+import java.util.ArrayList;
 
 /**
  * Created by volverine on 5/12/16.
@@ -32,4 +35,6 @@ public class MainTower extends Tower {
         gc.drawImage(img, image_x, image_y);
     }
 
+
+    public void Action(ArrayList<DrawableObject> mapObj) {}
 }

@@ -46,7 +46,6 @@ public class World {
     private Product product_to_buy = null;
     private MouseHandler mouseHandler;
     private ImageView tobuy_ImageView;
-    private ImageView delete_obj;
     private ProductGhost productGhost;
 
 
@@ -56,6 +55,8 @@ public class World {
         canvas.setWidth(ApplicationGUI.Main.CurrentResolutionW);
         gc = canvas.getGraphicsContext2D();
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Creating Shop Panel
+        /* Building items */
         tobuy_ImageView = new ImageView();
         tobuy_ImageView.setOpacity(1);
         pane.getChildren().add(tobuy_ImageView);
@@ -67,6 +68,10 @@ public class World {
         for (Product product: shop.getProducts()) {
             shop_panel.getChildren().add(product.getImageView());
         }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Setting Z-order
+
+        shop_panel.toFront();
     }
 
 
@@ -104,7 +109,7 @@ public class World {
 
 
 
-    public void checkShop() {
+    public void shopAction() {
         if (product_to_buy == null) {
             product_to_buy = shop.getState();
 
@@ -132,8 +137,10 @@ public class World {
 
                     try {
                         Class<?> tower_class = Class.forName(product_to_buy.getClass_name());
-                        Constructor<?> construct = tower_class.getConstructor(Position.class, HealthPoints.class);
-                        mapObjects.add((DrawableObject)construct.newInstance(new Position(click_x, click_y), new HealthPoints(500)));
+                        Constructor<?> construct = tower_class.getConstructor(Position.class, HealthPoints.class,
+                                                                                MainTower.class);
+                        mapObjects.add((DrawableObject)construct.newInstance(new Position(click_x, click_y),
+                                                                    new HealthPoints(500), mainTower));
                     } catch (Exception e) {
                         System.out.println(e);
                     }
@@ -148,6 +155,20 @@ public class World {
     }
 
 
+    void TrashAction() {
+
+    }
+
+
+    public void Action() {
+        for (DrawableObject obj: mapObjects) {
+            if (obj instanceof IMovable) {
+                ((IMovable) obj).Action(mapObjects);
+            }
+        }
+    }
+
+
     public void initialize() {
         InitGraphics();
 
@@ -156,18 +177,19 @@ public class World {
         mainTower = new MainTower(new Position(100, 100), new HealthPoints(1000));
 
         mapObjects.add(mainTower);
-        mapObjects.add(new LightUnitTower(new Position(50, 50), new HealthPoints(500)));
-        mapObjects.add(new MoneyTower(new Position(1200, 150), new HealthPoints(200)));
+        mapObjects.add(new LightUnitTower(new Position(50, 50), new HealthPoints(500), mainTower));
+        mapObjects.add(new MoneyTower(new Position(1200, 150), new HealthPoints(200), mainTower));
         mapObjects.add(new LightUnitEnemy(new Position(400, 400), new HealthPoints(400)));
 
         new AnimationTimer() {
             public void handle(long startNanoTime) {
+                Action();
                 BackgroundRedraw();
                 redrawDrawable();
                 updateMoney();
 
 
-                checkShop();
+                shopAction();
                 FPS += 1;
                 fps_nanoTimer_current = System.nanoTime();
                 if (Math.abs(fps_nanoTimer_start - fps_nanoTimer_current) >= 1000000000.0) {
