@@ -2,8 +2,11 @@ package World.Towers;
 
 import ApplicationGUI.ImageManager;
 import World.DrawableObject;
+import World.Enemies.Enemy;
 import World.HealthPoints;
 import World.Position;
+import World.Towers.Strategy.AttackNearest;
+import World.Towers.Strategy.Strategy;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -17,10 +20,27 @@ import java.util.ArrayList;
 public class LightUnitTower extends Tower {
     public static Integer ImageID = new Integer(1002);
     private MainTower mainTower;
+    private double Radius = 100;
+    private int damage = 4;
+    private int speed = 10;
+    private Strategy strategy;
+
+    public double getRadius() {
+        return Radius;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public int getBulletDamage() {
+        return damage;
+    }
 
     public LightUnitTower(Position position, HealthPoints healthPoints, MainTower mainTower) {
         super(position, healthPoints);
         this.mainTower = mainTower;
+        strategy = new AttackNearest();
     }
 
 
@@ -32,5 +52,7 @@ public class LightUnitTower extends Tower {
         gc.drawImage(img, image_x, image_y);
     }
 
-    public void Action(ArrayList<DrawableObject> mapObj) {}
+    public void Action(ArrayList<DrawableObject> mapObj) {
+        strategy.Action(this, mapObj);
+    }
 }

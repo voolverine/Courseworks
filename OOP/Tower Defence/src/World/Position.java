@@ -16,6 +16,12 @@ public class Position {
         this.x = x;
         this.y = y;
     }
+
+    public Position(Position position) {
+        this.x = position.getX();
+        this.y = position.getY();
+    }
+
     public Position() {
         this.x = 0;
         this.y = 0;

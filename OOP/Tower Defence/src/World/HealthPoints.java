@@ -21,7 +21,7 @@ public class HealthPoints {
     }
 
 
-    private boolean isKilled() {
+    public boolean isKilled() {
         if (current_hp <= 0) {
             killed = true;
         }

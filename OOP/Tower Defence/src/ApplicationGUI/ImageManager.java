@@ -1,11 +1,13 @@
 package ApplicationGUI;
 
+import World.Bullets.LightUnitBullet;
 import World.Enemies.LightUnitEnemy;
 import World.Towers.LightUnitTower;
 import World.Towers.MainTower;
 import World.Towers.MoneyTower;
 import World.World;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +33,9 @@ public class ImageManager {
         Images.put(MoneyTower.ImageID, new Image("/Images/MoneyTower.png"));
         Images.put(MainTower.ImageID, new Image("/Images/mainTower.png"));
         Images.put(LightUnitEnemy.ImageID, new Image("/Images/lightEnemy.png"));
+        Images.put(LightUnitBullet.ImageID, new Image("/Images/lightUnitBullet.png"));
     }
+
 
     public Image getImage(Integer id) {
         return Images.get(id);

@@ -2,13 +2,14 @@ package World.Enemies;
 
 import World.DrawableObject;
 import World.HealthPoints;
+import World.IHealthable;
 import World.Position;
 import javafx.scene.canvas.GraphicsContext;
 
 /**
  * Created by volverine on 5/11/16.
  */
-public class Enemy extends DrawableObject {
+public class Enemy extends DrawableObject implements IHealthable {
     protected HealthPoints healthPoints;
 
     public HealthPoints getHealthPoints() {

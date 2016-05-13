@@ -27,6 +27,11 @@ public class DrawableObject {
 
 
     public static boolean isIntersects(DrawableObject obj1, DrawableObject obj2) {
+        return tryIntersects(obj1, obj2) || tryIntersects(obj2, obj1);
+    }
+
+
+    public static boolean tryIntersects(DrawableObject obj1, DrawableObject obj2) {
         try {
             Field field1 = obj1.getClass().getField("ImageID");
             Field field2 = obj1.getClass().getField("ImageID");
@@ -72,7 +77,6 @@ public class DrawableObject {
                 return false;
             }
         } catch(Exception e) {
-            System.out.println(e);
             return false;
         }
     }

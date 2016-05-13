@@ -22,6 +22,7 @@ import javafx.scene.layout.StackPane;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 /**
@@ -155,17 +156,32 @@ public class World {
     }
 
 
-    void TrashAction() {
-
-    }
-
-
     public void Action() {
-        for (DrawableObject obj: mapObjects) {
+        int length = mapObjects.size();
+
+        for (int i = 0; i < length; i++) {
+            DrawableObject obj = mapObjects.get(i);
             if (obj instanceof IMovable) {
                 ((IMovable) obj).Action(mapObjects);
             }
         }
+
+        ArrayList<DrawableObject> to_delete = new ArrayList<DrawableObject>();
+        length = mapObjects.size();
+        for (int i = 0; i < length; i++) {
+            DrawableObject obj = mapObjects.get(i);
+            if (obj instanceof IHealthable) {
+                if (((IHealthable) obj).getHealthPoints().isKilled()) {
+                    to_delete.add(obj);
+                }
+            }
+        }
+
+        for (DrawableObject obj: to_delete) {
+            System.out.println(String.format("Removing %s", obj.getClass().toString()));
+            mapObjects.remove(obj);
+        }
+        to_delete.clear();
     }
 
 
