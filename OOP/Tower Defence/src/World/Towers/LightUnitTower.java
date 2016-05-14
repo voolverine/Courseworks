@@ -21,7 +21,7 @@ public class LightUnitTower extends Tower implements IHealthDrawable {
     private MainTower mainTower;
     private double Radius = 100;
     private int damage = 4;
-    private int speed = 10;
+    private int speed = 30;
     private Strategy strategy;
     private HealthProgress healthProgress;
 

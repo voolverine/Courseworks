@@ -53,11 +53,11 @@ public class DrawableObject {
         return result;
     }
 
-
+    /* TODO: fix this shit */
     public static boolean tryIntersects(DrawableObject obj1, DrawableObject obj2) {
         try {
             Field field1 = obj1.getClass().getField("ImageID");
-            Field field2 = obj1.getClass().getField("ImageID");
+            Field field2 = obj2.getClass().getField("ImageID");
 
             if (field1 != null && field2 != null) {
                 Integer img_id1 = (Integer)field1.get(obj1);
@@ -72,8 +72,8 @@ public class DrawableObject {
                 int height2 = (int)image2.getHeight();
 
 
-                int dx[] = {width1, width1, 0, 0};
-                int dy[] = {0, height1, height1, 0};
+                int dx[] = {width1 / 2, width1 / 2, -width1 / 2, -width1 / 2};
+                int dy[] = {height1 / 2, -height1 / 2, height1 / 2, -height1 / 2};
 
                 // Normalized image corners
                 int x1 = obj2.getPosition().getX() - width2 / 2;
@@ -82,8 +82,8 @@ public class DrawableObject {
                 int y2 = obj2.getPosition().getY() + height2 / 2;
 
                 // Normalize obj1 image corners
-                int cur_x = obj1.getPosition().getX() - width1 / 2;
-                int cur_y = obj1.getPosition().getY() - height1 / 2;
+                int cur_x = obj1.getPosition().getX();
+                int cur_y = obj1.getPosition().getY();
 
 
                 for (int i = 0; i < dx.length; i++) {
@@ -91,6 +91,8 @@ public class DrawableObject {
                     int newy = cur_y + dy[i];
                     if (x1 <= newx && newx <= x2 &&
                             y1 <= newy && newy <= y2) {
+                        // System.out.println(String.format(String.format("x1 = %d <= newx = %d <= x2 = %d", x1, newx, x2)));
+                        // System.out.println(String.format(String.format("y1 = %d <= newy = %d <= y2 = %d", y1, newy, y2)));
                         return true;
                     }
                 }

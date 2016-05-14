@@ -63,7 +63,12 @@ public class LightUnitBullet extends Bullet {
         }
 
         setPosition(cur_x + dx[best], cur_y + dy[best]);
-        if (Position.dist(this, target) < 1.5) {
+//        if (Position.dist(this, target) < 1.5) {
+        if (DrawableObject.isIntersects(this, target)) {
+            System.out.println(String.format("Intersect in enemy_x = %d, enemy_y = %d \n" +
+                    "                               bullet_x = %d, bullet_y = %d",
+                                                    target.getPosition().getX(), target.getPosition().getY(),
+                                                    position.getX(), position.getY()));
             ((IHealthable) target).getHealthPoints().hurt(damage);
             healthPoints.hurt(1);
         }
