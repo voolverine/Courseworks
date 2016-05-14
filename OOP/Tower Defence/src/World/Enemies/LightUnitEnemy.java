@@ -1,19 +1,24 @@
 package World.Enemies;
 
 import ApplicationGUI.ImageManager;
-import World.HealthPoints;
-import World.Position;
+import World.*;
+import World.Towers.LightUnitTower;
+import World.Towers.MainTower;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+
+import java.util.ArrayList;
 
 /**
  * Created by volverine on 5/11/16.
  */
-public class LightUnitEnemy extends Enemy {
+public class LightUnitEnemy extends Enemy implements IHealthDrawable {
     public static Integer ImageID = new Integer(2000);
+    private HealthProgress healthProgress;
 
-    public LightUnitEnemy(Position position, HealthPoints healthPoints) {
-        super(position, healthPoints);
+    public LightUnitEnemy(Position position, HealthPoints healthPoints, MainTower mainTower) {
+        super(position, healthPoints, mainTower);
+        healthProgress = new HealthProgress(LightUnitTower.ImageID, healthPoints, position);
     }
 
 
@@ -26,5 +31,11 @@ public class LightUnitEnemy extends Enemy {
         gc.drawImage(img, image_x, image_y);
     }
 
-    public void Action() {}
+    public void DrawHealth(GraphicsContext gc) {
+        healthProgress.update(gc);
+    }
+
+    public void Action(ArrayList<DrawableObject> mapObj) {
+
+    }
 }

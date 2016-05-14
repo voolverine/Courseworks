@@ -35,6 +35,7 @@ public class World {
     public Pane pane;
     public Canvas canvas;
     public FlowPane shop_panel;
+    public Label time_label;
 
     private GraphicsContext gc;
 
@@ -185,6 +186,15 @@ public class World {
     }
 
 
+    public void drawHealth() {
+        for (DrawableObject obj: mapObjects) {
+            if (obj instanceof IHealthDrawable) {
+                ((IHealthDrawable) obj).DrawHealth(gc);
+            }
+        }
+    }
+
+
     public void initialize() {
         InitGraphics();
 
@@ -195,7 +205,8 @@ public class World {
         mapObjects.add(mainTower);
         mapObjects.add(new LightUnitTower(new Position(50, 50), new HealthPoints(500), mainTower));
         mapObjects.add(new MoneyTower(new Position(1200, 150), new HealthPoints(200), mainTower));
-        mapObjects.add(new LightUnitEnemy(new Position(400, 400), new HealthPoints(400)));
+        mapObjects.add(new LightUnitEnemy(new Position(400, 400), new HealthPoints(400), mainTower));
+        mapObjects.add(new Time(time_label));
 
         new AnimationTimer() {
             public void handle(long startNanoTime) {
@@ -206,6 +217,7 @@ public class World {
 
 
                 shopAction();
+                drawHealth();
                 FPS += 1;
                 fps_nanoTimer_current = System.nanoTime();
                 if (Math.abs(fps_nanoTimer_start - fps_nanoTimer_current) >= 1000000000.0) {

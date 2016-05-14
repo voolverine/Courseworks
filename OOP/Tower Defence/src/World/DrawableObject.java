@@ -7,6 +7,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 /**
  * Created by volverine on 4/19/16.
@@ -28,6 +29,28 @@ public class DrawableObject {
 
     public static boolean isIntersects(DrawableObject obj1, DrawableObject obj2) {
         return tryIntersects(obj1, obj2) || tryIntersects(obj2, obj1);
+    }
+
+    public static boolean isFree(Position position, DrawableObject obj, ArrayList<DrawableObject> mapObj) {
+        Position temp_position = obj.getPosition();
+        obj.getPosition().setX(position.getX());
+        obj.getPosition().setY(position.getY());
+        boolean result = true;
+
+        for (DrawableObject item: mapObj) {
+            if (item.getPosition().getX() != temp_position.getX() ||
+                    item.getPosition().getY() != temp_position.getY()) {
+                if (isIntersects(obj, item)) {
+                    result = false;
+                    break;
+                }
+            }
+        }
+
+        obj.getPosition().setX(temp_position.getX());
+        obj.getPosition().setY(temp_position.getY());
+
+        return result;
     }
 
 

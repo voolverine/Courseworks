@@ -67,5 +67,17 @@ public class LightUnitBullet extends Bullet {
             ((IHealthable) target).getHealthPoints().hurt(damage);
             healthPoints.hurt(1);
         }
+        /*
+        int x1 = position.getX();
+        int y1 = position.getY();
+
+        int x2 = target.getPosition().getX();
+        int y2 = target.getPosition().getY();
+
+        int A = x2 - y1;
+        int B = x1 - x2;
+        int C = x2 * y1 - x1 * y2;
+
+        */
     }
 }

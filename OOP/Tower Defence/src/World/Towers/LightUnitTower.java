@@ -1,10 +1,8 @@
 package World.Towers;
 
 import ApplicationGUI.ImageManager;
-import World.DrawableObject;
+import World.*;
 import World.Enemies.Enemy;
-import World.HealthPoints;
-import World.Position;
 import World.Towers.Strategy.AttackNearest;
 import World.Towers.Strategy.Strategy;
 import javafx.geometry.Pos;
@@ -12,18 +10,20 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import org.omg.PortableServer.POA;
 
+import java.awt.font.ImageGraphicAttribute;
 import java.util.ArrayList;
 
 /**
  * Created by volverine on 5/11/16.
  */
-public class LightUnitTower extends Tower {
+public class LightUnitTower extends Tower implements IHealthDrawable {
     public static Integer ImageID = new Integer(1002);
     private MainTower mainTower;
     private double Radius = 100;
     private int damage = 4;
     private int speed = 10;
     private Strategy strategy;
+    private HealthProgress healthProgress;
 
     public double getRadius() {
         return Radius;
@@ -40,6 +40,7 @@ public class LightUnitTower extends Tower {
     public LightUnitTower(Position position, HealthPoints healthPoints, MainTower mainTower) {
         super(position, healthPoints);
         this.mainTower = mainTower;
+        healthProgress = new HealthProgress(LightUnitTower.ImageID, healthPoints, position);
         strategy = new AttackNearest();
     }
 
@@ -50,6 +51,11 @@ public class LightUnitTower extends Tower {
         int image_y = position.getY() - (int)img.getHeight() / 2;
 
         gc.drawImage(img, image_x, image_y);
+    }
+
+
+    public void DrawHealth(GraphicsContext gc) {
+        healthProgress.update(gc);
     }
 
     public void Action(ArrayList<DrawableObject> mapObj) {
