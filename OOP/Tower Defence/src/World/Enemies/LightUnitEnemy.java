@@ -16,8 +16,8 @@ public class LightUnitEnemy extends Enemy implements IHealthDrawable {
     public static Integer ImageID = new Integer(2000);
     private HealthProgress healthProgress;
 
-    public LightUnitEnemy(Position position, HealthPoints healthPoints, MainTower mainTower) {
-        super(position, healthPoints, mainTower);
+    public LightUnitEnemy(Position position, HealthPoints healthPoints, MainTower mainTower, Time time) {
+        super(position, healthPoints, mainTower, time);
         healthProgress = new HealthProgress(LightUnitTower.ImageID, healthPoints, position);
     }
 

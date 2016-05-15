@@ -18,8 +18,8 @@ import java.util.ArrayList;
 public class LightUnitBullet extends Bullet {
     public static Integer ImageID = new Integer(5000);
 
-    private static int dx[] = {-1, -1, -1, 0, 0, 1, 1, 1};
-    private static int dy[] = {-1, 0, 1, 0, 0, -1, 0, 1};
+    private static int dx[] = {-3, -2, -2, -2, -2, -2, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3};
+    private static int dy[] = {0, -2, -1, 0, 1, 2, -2, -1, 0, 1, 2, -3, -2, -1, 0, 1, 2, 3, -2, -1, 0, 1, 2, -2, -1, 0, 1, 2, 0};
 
     public LightUnitBullet(Position position, DrawableObject target, int damage) {
         super(position, target, damage);
@@ -65,10 +65,6 @@ public class LightUnitBullet extends Bullet {
         setPosition(cur_x + dx[best], cur_y + dy[best]);
 //        if (Position.dist(this, target) < 1.5) {
         if (DrawableObject.isIntersects(this, target)) {
-            System.out.println(String.format("Intersect in enemy_x = %d, enemy_y = %d \n" +
-                    "                               bullet_x = %d, bullet_y = %d",
-                                                    target.getPosition().getX(), target.getPosition().getY(),
-                                                    position.getX(), position.getY()));
             ((IHealthable) target).getHealthPoints().hurt(damage);
             healthPoints.hurt(1);
         }

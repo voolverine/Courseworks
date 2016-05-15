@@ -4,6 +4,7 @@ import ApplicationGUI.ImageManager;
 import World.DrawableObject;
 import World.HealthPoints;
 import World.Position;
+import World.Time;
 import javafx.animation.Interpolatable;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
@@ -16,13 +17,15 @@ import java.util.ArrayList;
  */
 public class MoneyTower extends Tower {
     public static Integer ImageID = new Integer(1001);
-    private int before_money = 3600;
     private MainTower mainTower;
     private int salary = 25;
+    private long previous_salary_seconds;
+    private long salary_period = 30;
 
-    public MoneyTower(Position position, HealthPoints healthPoints, MainTower mainTower) {
-        super(position, healthPoints);
+    public MoneyTower(Position position, HealthPoints healthPoints, MainTower mainTower, Time time) {
+        super(position, healthPoints, time);
         this.mainTower = mainTower;
+        previous_salary_seconds = time.getCurrentGameTimeSeconds();
     }
 
 
@@ -36,10 +39,9 @@ public class MoneyTower extends Tower {
 
 
     public void Action(ArrayList<DrawableObject> mapObj) {
-        before_money--;
-        if (before_money <= 0) {
-            before_money = 3600;
+        if (time.timeGoneAfter(previous_salary_seconds, salary_period)) {
             mainTower.getBank().invest(salary);
+            previous_salary_seconds = time.getCurrentGameTimeSeconds();
         }
     }
 }

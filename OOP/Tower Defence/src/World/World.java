@@ -4,6 +4,7 @@ import ApplicationGUI.ImageManager;
 import ApplicationGUI.Main;
 import World.Enemies.Enemy;
 import World.Enemies.LightUnitEnemy;
+import World.Towers.HeavyUnitTower;
 import World.Towers.LightUnitTower;
 import World.Towers.MainTower;
 import World.Towers.MoneyTower;
@@ -49,6 +50,7 @@ public class World {
     private MouseHandler mouseHandler;
     private ImageView tobuy_ImageView;
     private ProductGhost productGhost;
+    private Time time;
 
 
     public void InitGraphics() {
@@ -66,6 +68,7 @@ public class World {
 
         shop.addProduct(new Product("World.Towers.LightUnitTower", 100, LightUnitTower.ImageID));
         shop.addProduct(new Product("World.Towers.MoneyTower", 100, MoneyTower.ImageID));
+        shop.addProduct(new Product("World.Towers.HeavyUnitTower", 200, HeavyUnitTower.ImageID));
 
         for (Product product: shop.getProducts()) {
             shop_panel.getChildren().add(product.getImageView());
@@ -140,9 +143,9 @@ public class World {
                     try {
                         Class<?> tower_class = Class.forName(product_to_buy.getClass_name());
                         Constructor<?> construct = tower_class.getConstructor(Position.class, HealthPoints.class,
-                                                                                MainTower.class);
+                                                                                MainTower.class, Time.class);
                         mapObjects.add((DrawableObject)construct.newInstance(new Position(click_x, click_y),
-                                                                    new HealthPoints(500), mainTower));
+                                                                    new HealthPoints(500), mainTower, time));
                     } catch (Exception e) {
                         System.out.println(e);
                     }
@@ -198,15 +201,16 @@ public class World {
     public void initialize() {
         InitGraphics();
 
+        time = new Time(time_label);
         mouseHandler = new MouseHandler(pane);
         mapObjects = new ArrayList<DrawableObject> ();
-        mainTower = new MainTower(new Position(100, 100), new HealthPoints(1000));
+        mainTower = new MainTower(new Position(100, 100), new HealthPoints(1000), time);
 
         mapObjects.add(mainTower);
-        mapObjects.add(new LightUnitTower(new Position(50, 50), new HealthPoints(500), mainTower));
-        mapObjects.add(new MoneyTower(new Position(1200, 150), new HealthPoints(200), mainTower));
-        mapObjects.add(new LightUnitEnemy(new Position(400, 400), new HealthPoints(400), mainTower));
-        mapObjects.add(new Time(time_label));
+        mapObjects.add(new LightUnitTower(new Position(50, 50), new HealthPoints(500), mainTower, time));
+        mapObjects.add(new MoneyTower(new Position(1200, 150), new HealthPoints(200), mainTower, time));
+        mapObjects.add(new LightUnitEnemy(new Position(400, 400), new HealthPoints(400), mainTower, time));
+        mapObjects.add(time);
 
         new AnimationTimer() {
             public void handle(long startNanoTime) {

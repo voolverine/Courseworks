@@ -2,26 +2,22 @@ package World.Towers;
 
 import ApplicationGUI.ImageManager;
 import World.*;
-import World.Enemies.Enemy;
 import World.Towers.Strategy.AttackNearest;
 import World.Towers.Strategy.Strategy;
-import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import org.omg.PortableServer.POA;
 
-import java.awt.font.ImageGraphicAttribute;
 import java.util.ArrayList;
 
 /**
- * Created by volverine on 5/11/16.
+ * Created by volverine on 5/15/16.
  */
-public class LightUnitTower extends Tower implements IHealthDrawable {
-    public static Integer ImageID = new Integer(1002);
+public class HeavyUnitTower extends Tower implements IHealthDrawable {
+    public static Integer ImageID = new Integer(1003);
     private MainTower mainTower;
     private double Radius = 100;
-    private int damage = 4;
-    private int speed = 3;
+    private int damage = 10;
+    private int speed = 5;
     private Strategy strategy;
     private HealthProgress healthProgress;
 
@@ -37,7 +33,7 @@ public class LightUnitTower extends Tower implements IHealthDrawable {
         return damage;
     }
 
-    public LightUnitTower(Position position, HealthPoints healthPoints, MainTower mainTower, Time time) {
+    public HeavyUnitTower(Position position, HealthPoints healthPoints, MainTower mainTower, Time time) {
         super(position, healthPoints, time);
         this.mainTower = mainTower;
         healthProgress = new HealthProgress(LightUnitTower.ImageID, healthPoints, position);

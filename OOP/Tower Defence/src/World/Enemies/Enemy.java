@@ -15,16 +15,18 @@ import java.util.*;
 public class Enemy extends DrawableObject implements IMovable, IHealthable {
     protected HealthPoints healthPoints;
     protected MainTower mainTower;
+    protected Time time;
     ArrayList<Position> way;
 
     public HealthPoints getHealthPoints() {
         return healthPoints;
     }
 
-    public Enemy(Position position, HealthPoints healthPoints, MainTower mainTower) {
+    public Enemy(Position position, HealthPoints healthPoints, MainTower mainTower, Time time) {
         super(position);
         this.healthPoints = healthPoints;
         this.mainTower = mainTower;
+        this.time = time;
         way = new ArrayList<Position>();
     }
 

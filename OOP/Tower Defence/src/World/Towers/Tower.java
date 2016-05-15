@@ -11,14 +11,16 @@ import java.util.ArrayList;
  */
 public class Tower extends DrawableObject implements IMovable, IHealthable {
     protected HealthPoints healthPoints;
+    protected Time time;
 
     public HealthPoints getHealthPoints() {
         return healthPoints;
     }
 
-    public Tower(Position position, HealthPoints healthPoints) {
+    public Tower(Position position, HealthPoints healthPoints, Time time) {
         super(position);
         this.healthPoints = healthPoints;
+        this.time = time;
     }
 
     public double getRadius() {

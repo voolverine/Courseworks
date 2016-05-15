@@ -4,6 +4,7 @@ import ApplicationGUI.ImageManager;
 import World.DrawableObject;
 import World.HealthPoints;
 import World.Position;
+import World.Time;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -17,8 +18,8 @@ public class MainTower extends Tower {
     private Bank bank;
 
 
-    public MainTower(Position position, HealthPoints healthPoints) {
-        super(position, healthPoints);
+    public MainTower(Position position, HealthPoints healthPoints, Time time) {
+        super(position, healthPoints, time);
         bank = new Bank(1000);
     }
 

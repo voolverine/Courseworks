@@ -6,6 +6,7 @@ import World.Bullets.LightUnitBullet;
 import World.DrawableObject;
 import World.Enemies.Enemy;
 import World.Position;
+import World.Time;
 import World.Towers.LightUnitTower;
 import World.Towers.Tower;
 import javafx.geometry.Pos;
@@ -18,7 +19,14 @@ import java.util.ArrayList;
  */
 public class AttackNearest implements Strategy {
     private Enemy target = null;
-    private int afterPrevAction = 0;
+    private Time time;
+    private long previous_second_of_shoot;
+
+
+    public AttackNearest(Time time) {
+        this.time = time;
+        previous_second_of_shoot = time.getCurrentGameTimeSeconds();
+    }
 
 
     private boolean isCloseEnough(Tower tower, Enemy enemy) {
@@ -54,11 +62,9 @@ public class AttackNearest implements Strategy {
     }
 
     public void Action(Tower tower, ArrayList<DrawableObject> mapObj) {
-        afterPrevAction--;
-        if (afterPrevAction > 0) {
+        if (!time.timeGoneAfter(previous_second_of_shoot, tower.getSpeed())) {
             return;
         }
-        afterPrevAction = tower.getSpeed();
 
 
         if (target != null) {
@@ -74,6 +80,7 @@ public class AttackNearest implements Strategy {
             return;
         } else {
             shoot(tower, mapObj);
+            previous_second_of_shoot = time.getCurrentGameTimeSeconds();
         }
     }
 }

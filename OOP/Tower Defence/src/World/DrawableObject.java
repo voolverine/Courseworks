@@ -53,7 +53,6 @@ public class DrawableObject {
         return result;
     }
 
-    /* TODO: fix this shit */
     public static boolean tryIntersects(DrawableObject obj1, DrawableObject obj2) {
         try {
             Field field1 = obj1.getClass().getField("ImageID");
