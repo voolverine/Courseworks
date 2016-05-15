@@ -4,7 +4,9 @@ import World.*;
 import World.Towers.MainTower;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.util.Pair;
 import sun.awt.image.ImageWatched;
+import sun.awt.image.IntegerComponentRaster;
 
 import javax.crypto.spec.PSource;
 import java.util.*;
@@ -13,13 +15,22 @@ import java.util.*;
  * Created by volverine on 5/11/16.
  */
 public class Enemy extends DrawableObject implements IMovable, IHealthable {
+
     protected HealthPoints healthPoints;
     protected MainTower mainTower;
     protected Time time;
-    ArrayList<Position> way;
 
     public HealthPoints getHealthPoints() {
         return healthPoints;
+    }
+
+    public MainTower getMainTower() {
+        return mainTower;
+    }
+
+    public void setPosition(int new_x, int new_y) {
+        position.setX(new_x);
+        position.setY(new_y);
     }
 
     public Enemy(Position position, HealthPoints healthPoints, MainTower mainTower, Time time) {
@@ -27,31 +38,6 @@ public class Enemy extends DrawableObject implements IMovable, IHealthable {
         this.healthPoints = healthPoints;
         this.mainTower = mainTower;
         this.time = time;
-        way = new ArrayList<Position>();
-    }
-
-/* TODO: not finished yet */
-    private void create_way() {
-        Queue<Position> q = new LinkedList<Position>();
-        Map<Position, Integer> history= new HashMap<Position, Integer>();
-        q.add(position);
-
-        while (!q.isEmpty()) {
-            Position cur = q.peek();
-            q.poll();
-
-
-        }
-    }
-
-
-
-    public void step(ArrayList<DrawableObject> mapObj) {
-        if (way.size() == 0) {
-            create_way();
-        }
-
-
     }
 
 

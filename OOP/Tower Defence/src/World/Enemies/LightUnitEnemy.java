@@ -2,8 +2,11 @@ package World.Enemies;
 
 import ApplicationGUI.ImageManager;
 import World.*;
+import World.Enemies.Strategy.AttackNearest;
+import World.Enemies.Strategy.ForwardMainTower;
 import World.Towers.LightUnitTower;
 import World.Towers.MainTower;
+import World.Enemies.Strategy.Strategy;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -15,12 +18,22 @@ import java.util.ArrayList;
 public class LightUnitEnemy extends Enemy implements IHealthDrawable {
     public static Integer ImageID = new Integer(2000);
     private HealthProgress healthProgress;
+    Strategy forwardStrategy;
+    Strategy attackStrategy;
+
+
+    public void setPosition(int new_x, int new_y) {
+        position.setX(new_x);
+        position.setY(new_y);
+    }
+
 
     public LightUnitEnemy(Position position, HealthPoints healthPoints, MainTower mainTower, Time time) {
         super(position, healthPoints, mainTower, time);
         healthProgress = new HealthProgress(LightUnitTower.ImageID, healthPoints, position);
+        forwardStrategy = new ForwardMainTower(this);
+        attackStrategy = new AttackNearest(this);
     }
-
 
 
     public void Draw(GraphicsContext gc) {
@@ -36,6 +49,7 @@ public class LightUnitEnemy extends Enemy implements IHealthDrawable {
     }
 
     public void Action(ArrayList<DrawableObject> mapObj) {
-
+        forwardStrategy.Action(mapObj);
+        attackStrategy.Action(mapObj);
     }
 }

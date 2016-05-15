@@ -1,10 +1,7 @@
 package World.Towers;
 
 import ApplicationGUI.ImageManager;
-import World.DrawableObject;
-import World.HealthPoints;
-import World.Position;
-import World.Time;
+import World.*;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -13,13 +10,15 @@ import java.util.ArrayList;
 /**
  * Created by volverine on 5/12/16.
  */
-public class MainTower extends Tower {
+public class MainTower extends Tower implements IHealthDrawable {
     public static Integer ImageID = new Integer(1000);
+    HealthProgress healthProgress;
     private Bank bank;
 
 
     public MainTower(Position position, HealthPoints healthPoints, Time time) {
         super(position, healthPoints, time);
+        healthProgress = new HealthProgress(MainTower.ImageID, healthPoints, position);
         bank = new Bank(1000);
     }
 
@@ -36,6 +35,9 @@ public class MainTower extends Tower {
         gc.drawImage(img, image_x, image_y);
     }
 
+   public void DrawHealth(GraphicsContext gc) {
+        healthProgress.update(gc);
+   }
 
     public void Action(ArrayList<DrawableObject> mapObj) {}
 }

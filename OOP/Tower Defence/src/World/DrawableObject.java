@@ -32,14 +32,14 @@ public class DrawableObject {
     }
 
     public static boolean isFree(Position position, DrawableObject obj, ArrayList<DrawableObject> mapObj) {
-        Position temp_position = obj.getPosition();
+        Position temp_position = new Position(obj.getPosition());
         obj.getPosition().setX(position.getX());
         obj.getPosition().setY(position.getY());
         boolean result = true;
 
         for (DrawableObject item: mapObj) {
-            if (item.getPosition().getX() != temp_position.getX() ||
-                    item.getPosition().getY() != temp_position.getY()) {
+            if (item.getPosition().getX() != obj.getPosition().getX() ||
+                    item.getPosition().getY() != obj.getPosition().getY()) {
                 if (isIntersects(obj, item)) {
                     result = false;
                     break;
