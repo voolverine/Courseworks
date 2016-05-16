@@ -33,6 +33,10 @@ public class Wave {
         }
     }
 
+    public long getWave_finish_time() {
+        return wave_finish_time;
+    }
+
     public Wave(ArrayList<DrawableObject> mapObj, Time time, ArrayList<Pair<Enemy, Long>> wave, long wave_finish_time) {
         this.time = time;
         this.mapObj = mapObj;

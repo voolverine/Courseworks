@@ -52,6 +52,7 @@ public class World {
     private ImageView tobuy_ImageView;
     private ProductGhost productGhost;
     private Time time;
+    private ProgressBar progressBar;
 
 
     public void InitGraphics() {
@@ -235,7 +236,7 @@ public class World {
                     new Long(60000)),
             new Pair<Enemy, Long>(new LightUnitEnemy(new Position(800, -40), new HealthPoints(40), mainTower, time),
                     new Long(60000))
-        )), 60));
+        )), 60000));
 
         waves.add(new Wave(mapObjects, time, new ArrayList<>(Arrays.asList(
             new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1000, 1200), new HealthPoints(40), mainTower, time),
@@ -256,8 +257,9 @@ public class World {
                     new Long(120000)),
             new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1300, 400), new HealthPoints(40), mainTower, time),
                     new Long(120000))
-        )), 120));
+        )), 120000));
 
+        progressBar = new ProgressBar(time, waves);
         mapObjects.add(time);
 
         new AnimationTimer() {
@@ -271,6 +273,7 @@ public class World {
 
                 shopAction();
                 drawHealth();
+                progressBar.Draw(gc);
                 FPS += 1;
                 fps_nanoTimer_current = System.nanoTime();
                 if (Math.abs(fps_nanoTimer_start - fps_nanoTimer_current) >= 1000000000.0) {
