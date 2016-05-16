@@ -6,6 +6,7 @@ import ApplicationGUI.Main;
 import World.Enemies.Wave;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -19,6 +20,7 @@ public class ProgressBar {
     private Time time;
     private ArrayList<Long> waves;
     private long last_wave_time;
+    private Label label;
 
 
     private int width = 200;
@@ -32,9 +34,9 @@ public class ProgressBar {
         long cur_time = time.getCurrentGameTimeMillis();
 
         for (int i = 0; i < waves.size(); i++) {
-            long diff = waves.get(i);
+            long diff = waves.get(i) - cur_time;
 
-            if (100 <= diff && diff <= 5000) {
+            if (100 <= diff && diff <= 3000) {
                 return true;
             }
         }
@@ -76,12 +78,24 @@ public class ProgressBar {
     }
 
 
-    public ProgressBar(Time time, ArrayList<Wave> waves) {
+    public void update(GraphicsContext gc) {
+        Draw(gc);
+        if (isWaveComming()) {
+            label.setOpacity(1.0);
+        } else {
+            label.setOpacity(0.0);
+        }
+    }
+
+
+    public ProgressBar(Time time, ArrayList<Wave> waves, Label label) {
         this.time = time;
         this.waves = new ArrayList<>();
         for (int i = 0; i < waves.size(); i++) {
             this.waves.add(waves.get(i).getWave_finish_time());
         }
+
         last_wave_time = this.waves.get(waves.size() - 1);
+        this.label = label;
     }
 }

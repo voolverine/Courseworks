@@ -37,6 +37,7 @@ public class World {
     public Canvas canvas;
     public FlowPane shop_panel;
     public Label time_label;
+    public Label reminder;
 
     private GraphicsContext gc;
 
@@ -259,7 +260,7 @@ public class World {
                     new Long(120000))
         )), 120000));
 
-        progressBar = new ProgressBar(time, waves);
+        progressBar = new ProgressBar(time, waves, reminder);
         mapObjects.add(time);
 
         new AnimationTimer() {
@@ -273,7 +274,7 @@ public class World {
 
                 shopAction();
                 drawHealth();
-                progressBar.Draw(gc);
+                progressBar.update(gc);
                 FPS += 1;
                 fps_nanoTimer_current = System.nanoTime();
                 if (Math.abs(fps_nanoTimer_start - fps_nanoTimer_current) >= 1000000000.0) {

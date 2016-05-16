@@ -25,8 +25,8 @@
       <file leaf-file-name="World.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/World/World.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="260" column="0" selection-start-line="260" selection-start-column="0" selection-end-line="260" selection-end-column="0" />
+            <state relative-caret-position="138">
+              <caret line="239" column="14" selection-start-line="239" selection-start-column="14" selection-end-line="239" selection-end-column="14" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -37,12 +37,12 @@
       <file leaf-file-name="ProgressBar.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/World/ProgressBar.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+            <state relative-caret-position="255">
+              <caret line="39" column="27" selection-start-line="39" selection-start-column="27" selection-end-line="39" selection-end-column="27" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1061#1062#0" expanded="true" />
                 <element signature="e#1132#1133#0" expanded="true" />
+                <element signature="e#1203#1204#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -111,32 +111,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ProductGhost.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/World/ProductGhost.java">
+      <file leaf-file-name="World.fxml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/World/World.fxml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="495">
-              <caret line="58" column="26" selection-start-line="58" selection-start-column="26" selection-end-line="58" selection-end-column="26" />
+            <state relative-caret-position="375">
+              <caret line="39" column="104" selection-start-line="39" selection-start-column="104" selection-end-line="39" selection-end-column="104" />
               <folding />
             </state>
           </provider>
+          <provider editor-type-id="JavaFX-Scene-Builder">
+            <state />
+          </provider>
         </entry>
       </file>
-      <file leaf-file-name="LightUnitEnemy.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/World/Enemies/LightUnitEnemy.java">
+      <file leaf-file-name="ProductGhost.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/World/ProductGhost.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="320">
-              <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#816#817#0" expanded="true" />
-                <element signature="e#845#846#0" expanded="true" />
-                <element signature="e#878#879#0" expanded="true" />
-                <element signature="e#907#908#0" expanded="true" />
-                <element signature="e#941#942#0" expanded="true" />
-                <element signature="e#974#975#0" expanded="true" />
-                <element signature="e#1009#1010#0" expanded="true" />
-                <element signature="e#1043#1044#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="48">
+              <caret line="58" column="26" selection-start-line="58" selection-start-column="26" selection-end-line="58" selection-end-column="26" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -171,7 +164,6 @@
         <option value="$PROJECT_DIR$/src/World/Towers/Strategy/Strategy.java" />
         <option value="$PROJECT_DIR$/src/World/Bullets/Bullet.java" />
         <option value="$PROJECT_DIR$/src/World/HealthPoints.java" />
-        <option value="$PROJECT_DIR$/src/World/World.fxml" />
         <option value="$PROJECT_DIR$/src/World/IHealthable.java" />
         <option value="$PROJECT_DIR$/src/World/IHealthDrawable.java" />
         <option value="$PROJECT_DIR$/src/World/HealthProgress.java" />
@@ -196,8 +188,9 @@
         <option value="$PROJECT_DIR$/src/World/TowerBarier.java" />
         <option value="$PROJECT_DIR$/src/World/ProductGhost.java" />
         <option value="$PROJECT_DIR$/src/World/Enemies/Wave.java" />
-        <option value="$PROJECT_DIR$/src/World/World.java" />
         <option value="$PROJECT_DIR$/src/ApplicationGUI/ImageManager.java" />
+        <option value="$PROJECT_DIR$/src/World/World.fxml" />
+        <option value="$PROJECT_DIR$/src/World/World.java" />
         <option value="$PROJECT_DIR$/src/World/ProgressBar.java" />
       </list>
     </option>
@@ -870,17 +863,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Resources/Images/x.png" />
     <entry file="file://$PROJECT_DIR$/src/World/Trash.java" />
-    <entry file="file://$PROJECT_DIR$/src/World/World.fxml">
-      <provider editor-type-id="JavaFX-Scene-Builder">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="34" column="78" selection-start-line="34" selection-start-column="78" selection-end-line="34" selection-end-column="78" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Resources/Images/lightUnitBullet.png">
       <provider selected="true" editor-type-id="images">
         <state />
@@ -1182,22 +1164,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/World/TowerBarier.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/World/ProductGhost.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="495">
-          <caret line="58" column="26" selection-start-line="58" selection-start-column="26" selection-end-line="58" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/World/Time.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
@@ -1226,16 +1192,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/World/World.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="260" column="0" selection-start-line="260" selection-start-column="0" selection-end-line="260" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ApplicationGUI/ImageManager.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="360">
@@ -1251,14 +1207,51 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/World/ProgressBar.java">
+    <entry file="file://$PROJECT_DIR$/src/World/TowerBarier.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+        <state relative-caret-position="390">
+          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/World/ProductGhost.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="48">
+          <caret line="58" column="26" selection-start-line="58" selection-start-column="26" selection-end-line="58" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/World/World.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="39" column="104" selection-start-line="39" selection-start-column="104" selection-end-line="39" selection-end-column="104" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/World/World.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="138">
+          <caret line="239" column="14" selection-start-line="239" selection-start-column="14" selection-end-line="239" selection-end-column="14" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1061#1062#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/World/ProgressBar.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="39" column="27" selection-start-line="39" selection-start-column="27" selection-end-line="39" selection-end-column="27" />
+          <folding>
+            <element signature="imports" expanded="true" />
             <element signature="e#1132#1133#0" expanded="true" />
+            <element signature="e#1203#1204#0" expanded="true" />
           </folding>
         </state>
       </provider>
