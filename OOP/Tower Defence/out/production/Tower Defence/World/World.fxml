@@ -39,6 +39,9 @@
 
        <Label fx:id="reminder" style="-fx-font-size: 70px;" text="Wave is comming !!!" textFill="#fff02a"
               layoutX="320" layoutY="300" />
+       <ImageView fx:id="pause" layoutX="1240" layoutY="4" />
+       <FlowPane fx:id="pause_menu" layoutX="550" layoutY="250" orientation="VERTICAL"
+                 prefWidth="200" prefHeight="200" style="-fx-background-color: white;" columnHalignment="CENTER"/>
    </children>
 
 </Pane>

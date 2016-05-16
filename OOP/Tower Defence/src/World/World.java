@@ -7,6 +7,7 @@ import World.Enemies.LightUnitEnemy;
 import World.Enemies.Wave;
 import World.Towers.*;
 import javafx.animation.AnimationTimer;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -38,6 +39,8 @@ public class World {
     public FlowPane shop_panel;
     public Label time_label;
     public Label reminder;
+    public ImageView pause;
+    public FlowPane pause_menu;
 
     private GraphicsContext gc;
 
@@ -54,13 +57,39 @@ public class World {
     private ProductGhost productGhost;
     private Time time;
     private ProgressBar progressBar;
+    private boolean paused = false;
+    private PauseMenu pauseMenu;
 
+
+
+
+    public PauseMenu getPauseMenu() {
+        return pauseMenu;
+    }
 
     public void InitGraphics() {
         canvas.setFocusTraversable(true);
         canvas.setHeight(ApplicationGUI.Main.CurrentResolutionH);
         canvas.setWidth(ApplicationGUI.Main.CurrentResolutionW);
         gc = canvas.getGraphicsContext2D();
+
+        pauseMenu = new PauseMenu(pause_menu);
+        pause.setImage(new Image("/Images/pause.png"));
+        pause.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                paused = true;
+                pauseMenu.activate();
+            }
+        });
+
+        pauseMenu.get_continueLabel().setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                paused = false;
+                pauseMenu.deactivate();
+            }
+        });
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Creating Shop Panel
         /* Building items */
@@ -265,16 +294,20 @@ public class World {
 
         new AnimationTimer() {
             public void handle(long startNanoTime) {
-                updateWaves();
-                Action();
-                BackgroundRedraw();
-                redrawDrawable();
-                updateMoney();
+                if (!paused) {
+
+                    updateWaves();
+                    Action();
+                    BackgroundRedraw();
+                    redrawDrawable();
+                    updateMoney();
 
 
-                shopAction();
-                drawHealth();
-                progressBar.update(gc);
+                    shopAction();
+                    drawHealth();
+                    progressBar.update(gc);
+                }
+
                 FPS += 1;
                 fps_nanoTimer_current = System.nanoTime();
                 if (Math.abs(fps_nanoTimer_start - fps_nanoTimer_current) >= 1000000000.0) {

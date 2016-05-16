@@ -1,5 +1,6 @@
 package ApplicationGUI;
 
+import World.World;
 import com.sun.javafx.perf.PerformanceTracker;
 import com.sun.javafx.tk.*;
 import javafx.application.Application;
@@ -27,9 +28,40 @@ public class Main extends Application {
 
     public void playWorld() {
         try {
-            root = FXMLLoader.load(getClass().getResource("/World/World.fxml"));
+            fxmlLoader.setRoot(null);
+            fxmlLoader.setController(null);
+            fxmlLoader.setLocation(getClass().getResource("/World/World.fxml"));
+            root = fxmlLoader.load();
             scene.setRoot(root);
 
+            World controller = (World)fxmlLoader.getController();
+            controller.getPauseMenu().get_ExitToMenuLabel().setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    playMenu();
+                }
+            });
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public void playMenu() {
+         try {
+             fxmlLoader.setRoot(null);
+             fxmlLoader.setController(null);
+             fxmlLoader.setLocation(getClass().getResource("/ApplicationGUI/Application.fxml"));
+             root = fxmlLoader.load();
+             scene.setRoot(root);
+
+             Controller controller = (Controller)fxmlLoader.getController();
+             controller.play_button.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                 @Override
+                 public void handle(MouseEvent event) {
+                     playWorld();
+                 }
+             });
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -53,15 +85,7 @@ public class Main extends Application {
         primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         primaryStage.setResizable(false);
         primaryStage.show();
-
-
-        Controller controller = (Controller)fxmlLoader.getController();
-        controller.play_button.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                playWorld();
-            }
-        });
+        playMenu();
     }
 
 
