@@ -3,8 +3,17 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<GridPane fx:controller="ApplicationGUI.Controller"
-          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
+<?import javafx.scene.layout.Pane?>
+<Pane fx:controller="ApplicationGUI.Controller"
+      xmlns:fx="http://javafx.com/fxml">
+    <children>
+        <Label text="Play" fx:id="play_label" style="-fx-font-size: 20px;" textFill="Green"
+                layoutX="600" layoutY="380" />
 
-    <Button text="Play" fx:id="play_button"/>
-</GridPane>
+        <Label text="Levels" fx:id="open_levels" style="-fx-font-size: 20px;" textFill="mediumvioletred"
+                layoutX="600" layoutY="400"/>
+
+        <Label text="exit ;(" fx:id="exit_label" style="-fx-font-size: 20px;" textFill="blueviolet"
+               layoutX="600" layoutY="420" />
+    </children>
+</Pane>

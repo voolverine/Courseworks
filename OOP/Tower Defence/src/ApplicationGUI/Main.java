@@ -56,7 +56,7 @@ public class Main extends Application {
              scene.setRoot(root);
 
              Controller controller = (Controller)fxmlLoader.getController();
-             controller.play_button.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+             controller.play_label.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
                  @Override
                  public void handle(MouseEvent event) {
                      playWorld();

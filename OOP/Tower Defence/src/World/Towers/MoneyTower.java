@@ -19,12 +19,22 @@ public class MoneyTower extends Tower implements IHealthDrawable {
     private long previous_salary_millis;
     private long salary_period = 30000;
     private HealthProgress healthProgress;
+    private boolean grabbed;
+
+    public boolean isGrabbed() {
+        return grabbed;
+    }
+
+    public void setGrabbed() {
+        grabbed = true;
+    }
 
     public MoneyTower(Position position, HealthPoints healthPoints, MainTower mainTower, Time time) {
         super(position, healthPoints, time);
         this.mainTower = mainTower;
         previous_salary_millis = time.getCurrentGameTimeMillis();
         healthProgress = new HealthProgress(MoneyTower.ImageID, healthPoints, position);
+        grabbed = false;
     }
 
 
