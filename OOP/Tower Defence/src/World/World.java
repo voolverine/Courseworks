@@ -4,6 +4,7 @@ import ApplicationGUI.ImageManager;
 import ApplicationGUI.Main;
 import World.Enemies.Enemy;
 import World.Enemies.LightUnitEnemy;
+import World.Enemies.Wave;
 import World.Towers.HeavyUnitTower;
 import World.Towers.LightUnitTower;
 import World.Towers.MainTower;
@@ -20,9 +21,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.util.Pair;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 
@@ -41,6 +44,7 @@ public class World {
     private GraphicsContext gc;
 
     private ArrayList<DrawableObject> mapObjects;
+    private ArrayList<Wave> waves;
     public static Integer ImageID = new Integer(0);
 
 // gaming variables from here
@@ -197,6 +201,12 @@ public class World {
         }
     }
 
+    public void updateWaves() {
+        for (int i = 0; i < waves.size(); i++) {
+            waves.get(i).updateWave();
+        }
+    }
+
 
     public void initialize() {
         InitGraphics();
@@ -204,16 +214,69 @@ public class World {
         time = new Time(time_label);
         mouseHandler = new MouseHandler(pane);
         mapObjects = new ArrayList<DrawableObject> ();
-        mainTower = new MainTower(new Position(100, 100), new HealthPoints(1000), time);
+        waves = new ArrayList<Wave>();
+        mainTower = new MainTower(new Position(500, 100), new HealthPoints(1000), time);
 
         mapObjects.add(mainTower);
         mapObjects.add(new LightUnitTower(new Position(50, 50), new HealthPoints(500), mainTower, time));
         mapObjects.add(new MoneyTower(new Position(1200, 150), new HealthPoints(200), mainTower, time));
+
+        waves.add(new Wave(mapObjects, time, new ArrayList<>(Arrays.asList(
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1000, 1200), new HealthPoints(40), mainTower, time),
+                    new Long(10)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(500, 1200), new HealthPoints(40), mainTower, time),
+                    new Long(20)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(-10, 700), new HealthPoints(40), mainTower, time),
+                    new Long(40)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(-10, 700), new HealthPoints(40), mainTower, time),
+                    new Long(60)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(-50, 700), new HealthPoints(40), mainTower, time),
+                    new Long(60)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(800, -40), new HealthPoints(40), mainTower, time),
+                    new Long(60))
+        )), 60));
+
+        waves.add(new Wave(mapObjects, time, new ArrayList<>(Arrays.asList(
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1000, 1200), new HealthPoints(40), mainTower, time),
+                    new Long(70)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1300, 500), new HealthPoints(40), mainTower, time),
+                    new Long(80)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(-10, 800), new HealthPoints(40), mainTower, time),
+                    new Long(80)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(600, 900), new HealthPoints(40), mainTower, time),
+                    new Long(90)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(-50, 700), new HealthPoints(40), mainTower, time),
+                    new Long(100)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(900, 900), new HealthPoints(40), mainTower, time),
+                    new Long(120)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(500, -40), new HealthPoints(40), mainTower, time),
+                    new Long(120)),
+             new Pair<Enemy, Long>(new LightUnitEnemy(new Position(700, -40), new HealthPoints(40), mainTower, time),
+                    new Long(120)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1300, 400), new HealthPoints(40), mainTower, time),
+                    new Long(120))
+        )), 120));
+
+/*
         mapObjects.add(new LightUnitEnemy(new Position(400, 400), new HealthPoints(400), mainTower, time));
+        mapObjects.add(new LightUnitTower(new Position(500, 140), new HealthPoints(500), mainTower, time));
+        mapObjects.add(new LightUnitTower(new Position(460, 140), new HealthPoints(500), mainTower, time));
+        mapObjects.add(new LightUnitTower(new Position(540, 140), new HealthPoints(500), mainTower, time));
+        mapObjects.add(new LightUnitEnemy(new Position(100, 400), new HealthPoints(400), mainTower, time));
+        mapObjects.add(new LightUnitEnemy(new Position(200, 400), new HealthPoints(400), mainTower, time));
+        mapObjects.add(new LightUnitEnemy(new Position(300, 400), new HealthPoints(400), mainTower, time));
+        mapObjects.add(new LightUnitEnemy(new Position(400, 500), new HealthPoints(400), mainTower, time));
+        mapObjects.add(new LightUnitEnemy(new Position(800, 800), new HealthPoints(400), mainTower, time));
+        mapObjects.add(new LightUnitEnemy(new Position(400, 700), new HealthPoints(400), mainTower, time));
+        mapObjects.add(new LightUnitEnemy(new Position(700, 400), new HealthPoints(400), mainTower, time));
+        mapObjects.add(new LightUnitEnemy(new Position(700, 450), new HealthPoints(400), mainTower, time));
+        mapObjects.add(new LightUnitEnemy(new Position(400, 800), new HealthPoints(400), mainTower, time));
+*/
         mapObjects.add(time);
 
         new AnimationTimer() {
             public void handle(long startNanoTime) {
+                updateWaves();
                 Action();
                 BackgroundRedraw();
                 redrawDrawable();

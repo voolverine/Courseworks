@@ -90,8 +90,10 @@ public class DrawableObject {
                     int newy = cur_y + dy[i];
                     if (x1 <= newx && newx <= x2 &&
                             y1 <= newy && newy <= y2) {
-                        // System.out.println(String.format(String.format("x1 = %d <= newx = %d <= x2 = %d", x1, newx, x2)));
-                        // System.out.println(String.format(String.format("y1 = %d <= newy = %d <= y2 = %d", y1, newy, y2)));
+                        /*
+                        System.out.println(String.format(String.format("x1 = %d <= newx = %d <= x2 = %d", x1, newx, x2)));
+                        System.out.println(String.format(String.format("y1 = %d <= newy = %d <= y2 = %d", y1, newy, y2)));
+                        */
                         return true;
                     }
                 }
@@ -101,6 +103,7 @@ public class DrawableObject {
                 return false;
             }
         } catch(Exception e) {
+            //System.out.println(e);
             return false;
         }
     }

@@ -28,6 +28,18 @@ public class Enemy extends DrawableObject implements IMovable, IHealthable {
         return mainTower;
     }
 
+    public int getBulletDamage() {
+        return 0;
+    }
+
+    public double getRadius() {
+        return 0;
+    }
+
+    public int getAtackSpeed() {
+        return 0;
+    }
+
     public void setPosition(int new_x, int new_y) {
         position.setX(new_x);
         position.setY(new_y);

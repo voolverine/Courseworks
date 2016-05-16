@@ -6,7 +6,6 @@ import World.Position;
 import javafx.geometry.Pos;
 import javafx.util.Pair;
 
-import javax.net.ssl.SSLContext;
 import java.util.*;
 
 /**
@@ -19,6 +18,9 @@ public class ForwardMainTower implements Strategy {
 
     private ArrayList<Position> way;
     private Enemy enemy;
+    private int wait_time = 25;
+    private int waiting = 0;
+    private boolean terminated = false;
 
     public ForwardMainTower(Enemy enemy) {
         this.enemy = enemy;
@@ -43,15 +45,16 @@ public class ForwardMainTower implements Strategy {
             way.set((int)way.size() - 1 - i, temp);
         }
 
-
+        /*
         for (int i = 0; i < way.size(); i++) {
             System.out.println(String.format("%d %d", way.get(i).getX(), way.get(i).getY()));
         }
+        */
     }
 
 
     private boolean neighBoors(Position position1, Position position2) {
-        System.out.println(Position.dist(position1, position2));
+        //System.out.println(Position.dist(position1, position2));
         if (Position.dist(position1, position2) <= 50.0) {
             return true;
         }
@@ -60,20 +63,35 @@ public class ForwardMainTower implements Strategy {
     }
 
 
+    private boolean isValid(Position pos) {
+        if (pos.getY() < -300 || 1500 < pos.getY() ||
+                pos.getX() < -300 || 1500 < pos.getX()) {
+            return false;
+        }
+
+        return true;
+    }
+
     private void create_way(ArrayList<DrawableObject> mapObj) {
         Queue<Position> q = new LinkedList<Position>();
         Map<Position, Pair<Integer, Position>> hashed = new HashMap<Position, Pair<Integer, Position>>();
         q.add(new Position(enemy.getPosition()));
         hashed.put(new Position(enemy.getPosition()), new Pair<Integer, Position>(0, new Position(-1, -1)));
+        Position last_neighboor = null;
+        terminated = false;
 
 
         while (!q.isEmpty()) {
             Position cur = q.peek();
+            Position previous = hashed.get(cur).getValue();
 
             if (neighBoors(cur, enemy.getMainTower().getPosition())) {
                 break;
             }
-            if (hashed.get(cur).getKey() >= 1500) {
+            System.out.println(hashed.get(cur).getKey());
+            if (hashed.get(cur).getKey() >= 600) {
+                terminated = true;
+                System.out.println(terminated);
                 break;
             }
 
@@ -82,18 +100,21 @@ public class ForwardMainTower implements Strategy {
             int cur_x = cur.getX();
             int cur_y = cur.getY();
 
-            double dist = 999999.0;
+            double dist_toMainTower = 999999.0;
             int best_way = -1;
 
             for (int i = 0; i < dx.length; i++) {
                 int new_x = cur_x + dx[i];
                 int new_y = cur_y + dy[i];
                 Position new_position = new Position(new_x, new_y);
+                boolean free = DrawableObject.isFree(new_position, enemy, mapObj);
+                last_neighboor = cur;
 
-                if (!hashed.containsKey(new_position) && DrawableObject.isFree(new_position, enemy, mapObj)) {
+                if (!hashed.containsKey(new_position) && isValid(new_position)
+                        && free) {
                     double new_dist = Position.dist(new_position, enemy.getMainTower().getPosition());
-                    if (new_dist < dist) {
-                        dist = new_dist;
+                    if (new_dist < dist_toMainTower && Position.dist(cur, previous) + 1.0 < Position.dist(new_position, previous)) {
+                        dist_toMainTower = new_dist;
                         best_way = i;
                     }
                 }
@@ -103,10 +124,14 @@ public class ForwardMainTower implements Strategy {
                 Position new_position = new Position(cur_x + dx[best_way], cur_y + dy[best_way]);
                 q.add(new_position);
                 hashed.put(new_position, new Pair<Integer, Position>(hashed.get(cur).getKey() + 1, cur));
+//                System.out.println(String.format("%d %d", new_position.getX(), new_position.getY()));
             }
         }
 
-        if (!q.isEmpty()) {
+        if (terminated || q.isEmpty()) {
+            getWay(hashed, last_neighboor);
+        } else
+        {
             Position final_step = q.peek();
             getWay(hashed, final_step);
         }
@@ -116,10 +141,12 @@ public class ForwardMainTower implements Strategy {
     private int find_me() {
         for (int i = 0; i < (int)way.size(); i++) {
             if (enemy.getPosition().equals(way.get(i))) {
+                /*
                 System.out.println(String.format("curx = %d cury = %d cmpx = %d cmpty = %d",
                         enemy.getPosition().getX(), enemy.getPosition().getY(),
                         way.get(i).getX(), way.get(i).getY()));
                 System.out.println(i);
+                */
                 return i;
             }
         }
@@ -143,19 +170,25 @@ public class ForwardMainTower implements Strategy {
             }
 
             if (!DrawableObject.isFree(way.get(ind + 1), enemy, mapObj)) {
-                create_way(mapObj);
-                ind = find_me();
+                if (waiting >= wait_time) {
+                    System.out.println("recreating");
+                    create_way(mapObj);
+                    ind = find_me();
+                } else {
+                    waiting++;
+                    return;
+                }
             }
 
-            if (ind == (int)way.size() - 1) {
-                return;
-            }
-
-
+            waiting = 0;
             ind++;
+            /*
             System.out.println(String.format("was x = %d y = %d \n new x = %d y = %d", enemy.getPosition().getX(),
                     enemy.getPosition().getY(), way.get(ind).getX(), way.get(ind).getY()));
-            enemy.setPosition(way.get(ind).getX(), way.get(ind).getY());
+            */
+            if (DrawableObject.isFree(way.get(ind), enemy, mapObj)) {
+                enemy.setPosition(way.get(ind).getX(), way.get(ind).getY());
+            }
         }
     }
 }

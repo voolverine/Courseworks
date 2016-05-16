@@ -20,6 +20,22 @@ public class LightUnitEnemy extends Enemy implements IHealthDrawable {
     private HealthProgress healthProgress;
     Strategy forwardStrategy;
     Strategy attackStrategy;
+    private int damage = 4;
+    private int Radius = 100;
+    private int atackSpeed = 4;
+    private int movingSpeed = 3;
+
+    public int getBulletDamage() {
+        return damage;
+    }
+
+    public double getRadius() {
+        return Radius;
+    }
+
+    public int getAtackSpeed() {
+        return atackSpeed;
+    }
 
 
     public void setPosition(int new_x, int new_y) {
@@ -32,7 +48,7 @@ public class LightUnitEnemy extends Enemy implements IHealthDrawable {
         super(position, healthPoints, mainTower, time);
         healthProgress = new HealthProgress(LightUnitTower.ImageID, healthPoints, position);
         forwardStrategy = new ForwardMainTower(this);
-        attackStrategy = new AttackNearest(this);
+        attackStrategy = new AttackNearest(this, time);
     }
 
 

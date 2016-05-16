@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class ProductGhost extends DrawableObject {
     private ImageView imageView;
-    private Integer ImageID;
+    public Integer ImageID;
     private MouseHandler mouseHandler;
 
     private boolean need_to_draw = false;
