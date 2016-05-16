@@ -61,16 +61,16 @@ public class Time extends DrawableObject implements IMovable {
         previous_timeMillis = current_timeMillis;
     }
 
-    public long getCurrentGameTimeSeconds() {
-        return current_gameTimeMillis / 1000;
+    public long getCurrentGameTimeMillis() {
+        return current_gameTimeMillis;
     }
 
-    public long getDifferenceSeconds(long time_in_seconds) {
-        return current_gameTimeMillis / 1000 - time_in_seconds;
+    public long getDifferenceMillis(long time_in_Millis) {
+        return current_gameTimeMillis - time_in_Millis;
     }
 
-    public boolean timeGoneAfter(long time_in_seconds, long time_need_to_go) {
-        if (getDifferenceSeconds(time_in_seconds) >= time_need_to_go) {
+    public boolean timeGoneAfter(long time_in_millis, long time_need_to_go) {
+        if (getDifferenceMillis(time_in_millis) >= time_need_to_go) {
             return true;
         }
 

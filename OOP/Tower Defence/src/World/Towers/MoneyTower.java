@@ -16,14 +16,14 @@ public class MoneyTower extends Tower implements IHealthDrawable {
     public static Integer ImageID = new Integer(1001);
     private MainTower mainTower;
     private int salary = 25;
-    private long previous_salary_seconds;
-    private long salary_period = 30;
+    private long previous_salary_millis;
+    private long salary_period = 30000;
     private HealthProgress healthProgress;
 
     public MoneyTower(Position position, HealthPoints healthPoints, MainTower mainTower, Time time) {
         super(position, healthPoints, time);
         this.mainTower = mainTower;
-        previous_salary_seconds = time.getCurrentGameTimeSeconds();
+        previous_salary_millis = time.getCurrentGameTimeMillis();
         healthProgress = new HealthProgress(MoneyTower.ImageID, healthPoints, position);
     }
 
@@ -41,9 +41,9 @@ public class MoneyTower extends Tower implements IHealthDrawable {
     }
 
     public void Action(ArrayList<DrawableObject> mapObj) {
-        if (time.timeGoneAfter(previous_salary_seconds, salary_period)) {
+        if (time.timeGoneAfter(previous_salary_millis, salary_period)) {
             mainTower.getBank().invest(salary);
-            previous_salary_seconds = time.getCurrentGameTimeSeconds();
+            previous_salary_millis = time.getCurrentGameTimeMillis();
         }
     }
 }

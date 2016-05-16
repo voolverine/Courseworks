@@ -21,12 +21,12 @@ public class Wave {
         if (finished) {
             return;
         }
-        if (time.getCurrentGameTimeSeconds() > wave_finish_time) {
+        if (time.getCurrentGameTimeMillis() > wave_finish_time) {
             finished = false;
         }
 
         for (int i = 0; i < wave.size(); i++) {
-            if (!was.get(i) && time.getCurrentGameTimeSeconds() >= wave.get(i).getValue()) {
+            if (!was.get(i) && time.getCurrentGameTimeMillis() >= wave.get(i).getValue()) {
                 mapObj.add(wave.get(i).getKey());
                 was.set(i, true);
             }

@@ -25,7 +25,7 @@ public class AttackNearest implements Strategy {
    public AttackNearest(Enemy enemy, Time time) {
       this.enemy = enemy;
       this.time = time;
-      previous_atack_time = time.getCurrentGameTimeSeconds();
+      previous_atack_time = time.getCurrentGameTimeMillis();
    }
 
    private void shoot(ArrayList<DrawableObject> mapObj) {
@@ -79,7 +79,7 @@ public class AttackNearest implements Strategy {
 
         if (target != null && isCloseEnough(target)) {
             shoot(mapObj);
-            previous_atack_time = time.getCurrentGameTimeSeconds();
+            previous_atack_time = time.getCurrentGameTimeMillis();
         }
     }
 }

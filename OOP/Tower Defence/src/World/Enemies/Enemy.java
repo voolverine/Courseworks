@@ -40,6 +40,10 @@ public class Enemy extends DrawableObject implements IMovable, IHealthable {
         return 0;
     }
 
+    public int getMovingSpeed() {
+        return 0;
+    }
+
     public void setPosition(int new_x, int new_y) {
         position.setX(new_x);
         position.setY(new_y);

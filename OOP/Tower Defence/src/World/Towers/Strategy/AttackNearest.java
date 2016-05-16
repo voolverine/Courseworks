@@ -25,7 +25,7 @@ public class AttackNearest implements Strategy {
 
     public AttackNearest(Time time) {
         this.time = time;
-        previous_second_of_shoot = time.getCurrentGameTimeSeconds();
+        previous_second_of_shoot = time.getCurrentGameTimeMillis();
     }
 
 
@@ -80,7 +80,7 @@ public class AttackNearest implements Strategy {
             return;
         } else {
             shoot(tower, mapObj);
-            previous_second_of_shoot = time.getCurrentGameTimeSeconds();
+            previous_second_of_shoot = time.getCurrentGameTimeMillis();
         }
     }
 }

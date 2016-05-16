@@ -3,6 +3,7 @@ package World.Enemies.Strategy;
 import World.DrawableObject;
 import World.Enemies.Enemy;
 import World.Position;
+import World.Time;
 import javafx.geometry.Pos;
 import javafx.util.Pair;
 
@@ -21,10 +22,14 @@ public class ForwardMainTower implements Strategy {
     private int wait_time = 25;
     private int waiting = 0;
     private boolean terminated = false;
+    long previous_step_time;
+    Time time;
 
-    public ForwardMainTower(Enemy enemy) {
+    public ForwardMainTower(Enemy enemy, Time time) {
         this.enemy = enemy;
         way = new ArrayList<Position>();
+        previous_step_time = time.getCurrentGameTimeMillis();
+        this.time = time;
     }
 
 
@@ -88,10 +93,9 @@ public class ForwardMainTower implements Strategy {
             if (neighBoors(cur, enemy.getMainTower().getPosition())) {
                 break;
             }
-            System.out.println(hashed.get(cur).getKey());
+
             if (hashed.get(cur).getKey() >= 600) {
                 terminated = true;
-                System.out.println(terminated);
                 break;
             }
 
@@ -156,6 +160,11 @@ public class ForwardMainTower implements Strategy {
 
 
     public void Action(ArrayList<DrawableObject> mapObj) {
+        if (!time.timeGoneAfter(previous_step_time, enemy.getMovingSpeed())) {
+            return;
+        }
+        previous_step_time = time.getCurrentGameTimeMillis();
+
         int ind = find_me();
 
         if (ind == -1) {

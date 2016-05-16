@@ -40,6 +40,12 @@ public class ProductGhost extends DrawableObject {
 
     void updateCanBeBuild(ArrayList<DrawableObject> mapObj) {
         for (DrawableObject obj: mapObj) {
+            if (obj instanceof TowerBarier) {
+                if (!((TowerBarier) obj).canBuild(position)) {
+                    can_be_build = false;
+                    return;
+                }
+            } else
             if (DrawableObject.isIntersects(obj, this)) {
                 can_be_build = false;
                 return;

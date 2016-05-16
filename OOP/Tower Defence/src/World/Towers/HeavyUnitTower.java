@@ -17,7 +17,7 @@ public class HeavyUnitTower extends Tower implements IHealthDrawable {
     private MainTower mainTower;
     private double Radius = 100;
     private int damage = 10;
-    private int speed = 5;
+    private int speed = 3000;
     private Strategy strategy;
     private HealthProgress healthProgress;
 
