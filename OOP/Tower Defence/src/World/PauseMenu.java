@@ -1,8 +1,11 @@
 package World;
 
 import com.sun.tools.javac.comp.Flow;
+import javafx.event.EventHandler;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.paint.Color;
 
 /**
  * Created by volverine on 5/16/16.
@@ -44,6 +47,36 @@ public class PauseMenu {
         this.flowPane = flowpane;
         Continue = new Label();
         exitToMenu = new Label();
+        Continue.setTextFill(Color.DARKGOLDENROD);
+        exitToMenu.setTextFill(Color.DARKGOLDENROD);
+
+        Continue.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Continue.setTextFill(Color.DARKORANGE);
+            }
+        });
+
+        Continue.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Continue.setTextFill(Color.DARKGOLDENROD);
+            }
+        });
+
+        exitToMenu.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                exitToMenu.setTextFill(Color.DARKORANGE);
+            }
+        });
+
+        exitToMenu.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                exitToMenu.setTextFill(Color.DARKGOLDENROD);
+            }
+        });
 
         flowpane.setOpacity(0);
         flowpane.getChildren().add(Continue);

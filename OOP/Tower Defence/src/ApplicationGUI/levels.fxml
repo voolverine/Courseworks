@@ -1,13 +1,18 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.canvas.Canvas?>
 <Pane fx:controller="ApplicationGUI.LevelsController"
       xmlns:fx="http://javafx.com/fxml">
     <children>
+        <Canvas fx:id="canvas" />
         <Label text="Level 1" fx:id="level1" style="-fx-font-size: 20px;" textFill="Green"
-               layoutX="600" layoutY="380" />
+               layoutX="100" layoutY="80" />
 
         <Label text="Level 2" fx:id="level2" style="-fx-font-size: 20px;" textFill="Green"
-               layoutX="600" layoutY="400"/>
+               layoutX="100" layoutY="100"/>
+
+        <Label text="Back" fx:id="back" style="-fx-font-size: 20px;" textFill="Green"
+               layoutX="1150" layoutY="80"/>
 
     </children>
 </Pane>

@@ -47,7 +47,7 @@ public class Time extends DrawableObject implements IMovable {
     }
 
     private void setCurrentTime() {
-        label.setText(String.format("Current time = " + MillisToString(current_gameTimeMillis)));
+        label.setText(String.format("Time " + MillisToString(current_gameTimeMillis)));
     }
 
     private void updateCurrentTime() {

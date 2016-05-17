@@ -3,19 +3,23 @@ package ApplicationGUI;
 import World.World;
 import com.sun.javafx.perf.PerformanceTracker;
 import com.sun.javafx.tk.*;
+import com.sun.javafx.tk.Toolkit;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.*;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.awt.*;
-import java.awt.Toolkit;
+
 
 public class Main extends Application {
     public static int CurrentResolutionH;
@@ -73,6 +77,13 @@ public class Main extends Application {
                 }
             });
 
+            controller.back.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    playMenu();
+                }
+            });
+
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -112,10 +123,9 @@ public class Main extends Application {
         fxmlLoader = new FXMLLoader(getClass().getResource("/ApplicationGUI/Application.fxml"));
         root = fxmlLoader.load();
 
-
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        CurrentResolutionH = (int)screenSize.getHeight();
-        CurrentResolutionW = (int)screenSize.getWidth();
+        Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+        CurrentResolutionH = (int)primScreenBounds.getHeight();
+        CurrentResolutionW = (int)primScreenBounds.getWidth();
 
         scene = new Scene(root, CurrentResolutionW, CurrentResolutionH);
 

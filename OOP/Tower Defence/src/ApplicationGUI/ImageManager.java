@@ -38,6 +38,9 @@ public class ImageManager {
         Images.put(LightUnitBullet.ImageID, new Image("/Images/lightUnitBullet.png"));
         Images.put(HeavyUnitTower.ImageID, new Image("/Images/heavyUnitTower.png"));
         Images.put(ProgressBar.ImageID, new Image("/Images/flag.png"));
+        Images.put(World.MoneyImageID, new Image("/Images/money.png"));
+        Images.put(LevelsController.ImageID, new Image("/Images/levels_background.png"));
+        Images.put(Controller.ImageID, new Image("/Images/menu_background.png"));
     }
 
 

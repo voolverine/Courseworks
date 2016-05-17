@@ -19,6 +19,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import javafx.util.Pair;
 
 import java.lang.reflect.Constructor;
@@ -33,7 +36,8 @@ import java.util.Iterator;
 public class World {
 
     public Label fps_label;
-    public Label money_label;
+    private Label money_label;
+    private ImageView money_pic;
     public Pane pane;
     public Canvas canvas;
     public FlowPane shop_panel;
@@ -42,6 +46,9 @@ public class World {
     public ImageView pause;
     public FlowPane pause_menu;
     public Label level_status;
+    public FlowPane money_flow;
+
+    public static Integer MoneyImageID = new Integer(700);
 
     private GraphicsContext gc;
 
@@ -104,7 +111,25 @@ public class World {
 
         for (Product product: shop.getProducts()) {
             shop_panel.getChildren().add(product.getImageView());
+            Label price = new Label(String.format("%d", product.getPrice()));
+            price.setFont(new Font("Courier New", 11));
+            price.setTextFill(Color.GOLD);
+            price.setStyle("-fx-font-weight: bold;");
+            shop_panel.getChildren().add(price);
         }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Upper Panel
+        money_pic = new ImageView(ImageManager.getInstance().getImage(World.MoneyImageID));
+        /*
+        money_pic.setFitHeight(19);
+        money_pic.setFitWidth(32);
+        */
+        money_label = new Label();
+        money_label.setFont(new Font("Courier New", 20));
+        money_label.setTextFill(Color.GOLD);
+        money_label.setStyle("-fx-font-weight: bold;");
+        money_flow.getChildren().add(money_pic);
+        money_flow.getChildren().add(money_label);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Setting Z-order
 
@@ -141,7 +166,7 @@ public class World {
     }
 
     public void updateMoney() {
-        money_label.setText(String.format("Money = %d", mainTower.getBank().getMoney()));
+        money_label.setText(String.format("%d", mainTower.getBank().getMoney()));
     }
 
 
@@ -245,11 +270,9 @@ public class World {
         mouseHandler = new MouseHandler(pane);
         mapObjects = new ArrayList<DrawableObject> ();
         waves = new ArrayList<Wave>();
-        mainTower = new MainTower(new Position(500, 300), new HealthPoints(80), time, 1);
+        mainTower = new MainTower(new Position(600, 350), new HealthPoints(80), time, 1);
 
         mapObjects.add(mainTower);
-        mapObjects.add(new LightUnitTower(new Position(50, 50), new HealthPoints(500), mainTower, time));
-        mapObjects.add(new MoneyTower(new Position(1200, 150), new HealthPoints(200), mainTower, time));
         mapObjects.add(new TowerBarier(-500, -500, Main.CurrentResolutionW, 100));
         mapObjects.add(new TowerBarier(-500, 500, 100, Main.CurrentResolutionH));
         mapObjects.add(new TowerBarier(100, Main.CurrentResolutionH - 100, Main.CurrentResolutionW, Main.CurrentResolutionH));
@@ -311,12 +334,13 @@ public class World {
                     drawHealth();
                     progressBar.update(gc);
                 }
-
+                /*
                 FPS += 1;
                 fps_nanoTimer_current = System.nanoTime();
                 if (Math.abs(fps_nanoTimer_start - fps_nanoTimer_current) >= 1000000000.0) {
                     updateFPS();
                 }
+                */
             }
         }.start();
     }
