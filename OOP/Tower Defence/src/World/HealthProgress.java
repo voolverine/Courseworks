@@ -33,7 +33,7 @@ public class HealthProgress {
         this.position = position;
 
         bar_width = image_width;
-        bar_height = image_height / 5;
+        bar_height = Math.max(image_height / 9, 7);
         inner_width = bar_width - HealthProgress.margin * 2;
         inner_height = bar_height - HealthProgress.margin * 2;
     }

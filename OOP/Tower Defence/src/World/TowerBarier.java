@@ -1,6 +1,9 @@
 package World;
 
 
+import ApplicationGUI.ImageManager;
+import javafx.scene.image.Image;
+
 /**
  * Created by volverine on 5/16/16.
  */
@@ -16,10 +19,23 @@ public class TowerBarier extends DrawableObject {
         this.corner2_y = corner2_y;
     }
 
-    public boolean canBuild(Position position) {
-        if (corner1_x <= position.getX() && position.getX() <= corner2_x &&
-                corner1_y <= position.getY() && position.getY() <= corner2_y) {
-            return false;
+    public boolean canBuild(Position position, Integer ImageID) {
+        Image img = ImageManager.getInstance().getImage(ImageID);
+        int width = (int)img.getWidth();
+        int height = (int)img.getHeight();
+
+        int dx[] = {width / 2, -width / 2, width / 2, -width/ 2};
+        int dy[] = {height / 2, -height / 2, -height / 2, height / 2};
+
+
+        for (int i = 0; i < dx.length; i++) {
+            int new_x = position.getX() + dx[i];
+            int new_y = position.getY() + dy[i];
+
+            if (corner1_x <= new_x && new_x <= corner2_x &&
+                    corner1_y <= new_y && new_y <= corner2_y) {
+                return false;
+            }
         }
 
         return true;

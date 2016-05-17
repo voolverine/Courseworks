@@ -14,12 +14,18 @@ public class MainTower extends Tower implements IHealthDrawable {
     public static Integer ImageID = new Integer(1000);
     HealthProgress healthProgress;
     private Bank bank;
+    private int level;
 
 
-    public MainTower(Position position, HealthPoints healthPoints, Time time) {
+    public int getLevel() {
+        return level;
+    }
+
+    public MainTower(Position position, HealthPoints healthPoints, Time time, int level) {
         super(position, healthPoints, time);
         healthProgress = new HealthProgress(MainTower.ImageID, healthPoints, position);
         bank = new Bank(1000);
+        this.level = level;
     }
 
 

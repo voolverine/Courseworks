@@ -18,7 +18,7 @@
 
        <Canvas fx:id="canvas"/>
 
-       <GridPane fx:id="score_panel" minWidth="1280" style="-fx-border-width: 2; -fx-border-color: black; -fx-border-style: dashed;">
+       <GridPane fx:id="score_panel" minWidth="1280" >
             <rowConstraints>
                 <RowConstraints />
                 <RowConstraints />
@@ -33,11 +33,13 @@
             <Label GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="fps_label"/>
             <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="money_label" />
             <Label GridPane.columnIndex="2" GridPane.rowIndex="0" fx:id="time_label" />
-            <FlowPane GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-background-color: grey; -fx-border-width: 1; -fx-border-color: red; -fx-border-style: dashed;" minHeight="400"
+            <FlowPane GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-background-color: grey;" minHeight="400"
                     fx:id = "shop_panel" orientation="VERTICAL" />
        </GridPane>
 
        <Label fx:id="reminder" style="-fx-font-size: 70px;" text="Wave is comming !!!" textFill="#fff02a"
+              layoutX="320" layoutY="300" />
+       <Label fx:id="level_status" style="-fx-font-size: 70px;" text="" textFill="#fff02a"
               layoutX="320" layoutY="300" />
        <ImageView fx:id="pause" layoutX="1240" layoutY="4" />
        <FlowPane fx:id="pause_menu" layoutX="550" layoutY="250" orientation="VERTICAL"

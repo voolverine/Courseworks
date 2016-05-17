@@ -3,6 +3,7 @@ package World.Towers;
 import ApplicationGUI.ImageManager;
 import World.*;
 import World.Enemies.Enemy;
+import World.Enemies.LightUnitEnemy;
 import World.Towers.Strategy.AttackNearest;
 import World.Towers.Strategy.Strategy;
 import javafx.geometry.Pos;

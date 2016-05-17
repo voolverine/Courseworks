@@ -191,6 +191,9 @@ public class ForwardMainTower implements Strategy {
 
             waiting = 0;
             ind++;
+            if (ind == way.size()) {
+                return;
+            }
             /*
             System.out.println(String.format("was x = %d y = %d \n new x = %d y = %d", enemy.getPosition().getX(),
                     enemy.getPosition().getY(), way.get(ind).getX(), way.get(ind).getY()));

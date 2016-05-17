@@ -41,6 +41,7 @@ public class World {
     public Label reminder;
     public ImageView pause;
     public FlowPane pause_menu;
+    public Label level_status;
 
     private GraphicsContext gc;
 
@@ -59,9 +60,7 @@ public class World {
     private ProgressBar progressBar;
     private boolean paused = false;
     private PauseMenu pauseMenu;
-
-
-
+    private FinishLevelChecker finishLevelChecker;
 
     public PauseMenu getPauseMenu() {
         return pauseMenu;
@@ -90,6 +89,7 @@ public class World {
                 pauseMenu.deactivate();
             }
         });
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Creating Shop Panel
         /* Building items */
@@ -158,6 +158,8 @@ public class World {
                 mouseHandler.getState(); // init mouse state
             }
         }
+
+        productGhost.updatePosition();
         productGhost.updateCanBeBuild(mapObjects);
 
         if (mainTower.getBank().isEnough(product_to_buy.getPrice())) {
@@ -243,13 +245,13 @@ public class World {
         mouseHandler = new MouseHandler(pane);
         mapObjects = new ArrayList<DrawableObject> ();
         waves = new ArrayList<Wave>();
-        mainTower = new MainTower(new Position(500, 100), new HealthPoints(1000), time);
+        mainTower = new MainTower(new Position(500, 300), new HealthPoints(80), time, 1);
 
         mapObjects.add(mainTower);
         mapObjects.add(new LightUnitTower(new Position(50, 50), new HealthPoints(500), mainTower, time));
         mapObjects.add(new MoneyTower(new Position(1200, 150), new HealthPoints(200), mainTower, time));
-        mapObjects.add(new TowerBarier(0, 0, Main.CurrentResolutionW, 100));
-        mapObjects.add(new TowerBarier(0, 0, 100, Main.CurrentResolutionH));
+        mapObjects.add(new TowerBarier(-500, -500, Main.CurrentResolutionW, 100));
+        mapObjects.add(new TowerBarier(-500, 500, 100, Main.CurrentResolutionH));
         mapObjects.add(new TowerBarier(100, Main.CurrentResolutionH - 100, Main.CurrentResolutionW, Main.CurrentResolutionH));
         mapObjects.add(new TowerBarier(Main.CurrentResolutionW - 100, 0, Main.CurrentResolutionW, Main.CurrentResolutionH));
 
@@ -290,12 +292,14 @@ public class World {
         )), 120000));
 
         progressBar = new ProgressBar(time, waves, reminder);
+        finishLevelChecker = new FinishLevelChecker(mainTower, mapObjects, time, waves, level_status);
         mapObjects.add(time);
+
 
         new AnimationTimer() {
             public void handle(long startNanoTime) {
-                if (!paused) {
-
+                String status = finishLevelChecker.updateGameStatus();
+                if (!paused && status == "GAMING") {
                     updateWaves();
                     Action();
                     BackgroundRedraw();

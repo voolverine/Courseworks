@@ -20,6 +20,7 @@ import java.awt.Toolkit;
 public class Main extends Application {
     public static int CurrentResolutionH;
     public static int CurrentResolutionW;
+    public static int level_to_play = 1;
 
     private static FXMLLoader fxmlLoader;
     private static Parent root;
@@ -47,6 +48,37 @@ public class Main extends Application {
         }
     }
 
+    public void playLevels() {
+        try {
+            fxmlLoader.setRoot(null);
+            fxmlLoader.setController(null);
+            fxmlLoader.setLocation(getClass().getResource("levels.fxml"));
+            root = fxmlLoader.load();
+            scene.setRoot(root);
+
+            LevelsController controller = (LevelsController) fxmlLoader.getController();
+            controller.level1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    level_to_play = 1;
+                    playWorld();
+                }
+            });
+
+            controller.level2.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    level_to_play = 2;
+                    playWorld();
+                }
+            });
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+
     public void playMenu() {
          try {
              fxmlLoader.setRoot(null);
@@ -62,6 +94,14 @@ public class Main extends Application {
                      playWorld();
                  }
              });
+
+             controller.open_levels.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                 @Override
+                 public void handle(MouseEvent event) {
+                     playLevels();
+                 }
+             });
+
         } catch (Exception e) {
             System.out.println(e);
         }
