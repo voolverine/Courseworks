@@ -2,6 +2,9 @@ package World.Towers;
 
 import ApplicationGUI.ImageManager;
 import World.*;
+import World.Towers.Strategy.IgnoreEverything;
+import World.Towers.Strategy.Reincarnation;
+import World.Towers.Strategy.Strategy;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -15,6 +18,9 @@ public class MainTower extends Tower implements IHealthDrawable {
     HealthProgress healthProgress;
     private Bank bank;
     private int level;
+    private int reincarnate_after = 10000;
+
+    private Strategy strategy;
 
 
     public int getLevel() {
@@ -26,6 +32,7 @@ public class MainTower extends Tower implements IHealthDrawable {
         healthProgress = new HealthProgress(MainTower.ImageID, healthPoints, position);
         bank = new Bank(1000);
         this.level = level;
+        this.strategy = new IgnoreEverything();
     }
 
 
@@ -41,9 +48,21 @@ public class MainTower extends Tower implements IHealthDrawable {
         gc.drawImage(img, image_x, image_y);
     }
 
-   public void DrawHealth(GraphicsContext gc) {
+    public void DrawHealth(GraphicsContext gc) {
         healthProgress.update(gc);
    }
 
-    public void Action(ArrayList<DrawableObject> mapObj) {}
+    public void Action(ArrayList<DrawableObject> mapObj) {
+        if (World.time.timeGoneAfter(getHealthPoints().getLast_hurtTime(), reincarnate_after)) {
+            if (!(strategy instanceof Reincarnation)) {
+                strategy = new Reincarnation(this, time);
+            }
+        } else {
+            if (!(strategy instanceof IgnoreEverything)) {
+                strategy = new IgnoreEverything();
+            }
+        }
+
+        strategy.Action(this, mapObj);
+    }
 }

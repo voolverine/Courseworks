@@ -63,7 +63,7 @@ public class World {
     private MouseHandler mouseHandler;
     private ImageView tobuy_ImageView;
     private ProductGhost productGhost;
-    private Time time;
+    public static Time time;
     private ProgressBar progressBar;
     private boolean paused = false;
     private PauseMenu pauseMenu;
@@ -204,7 +204,7 @@ public class World {
                         Constructor<?> construct = tower_class.getConstructor(Position.class, HealthPoints.class,
                                                                                 MainTower.class, Time.class);
                         mapObjects.add((DrawableObject)construct.newInstance(new Position(click_x, click_y),
-                                                                    new HealthPoints(500), mainTower, time));
+                                                                    new HealthPoints(50), mainTower, time));
                     } catch (Exception e) {
                         System.out.println(e);
                     }
@@ -280,7 +280,7 @@ public class World {
 
         waves.add(new Wave(mapObjects, time, new ArrayList<>(Arrays.asList(
             new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1000, 1200), new HealthPoints(40), mainTower, time),
-                    new Long(10000)),
+                    new Long(1000)),
             new Pair<Enemy, Long>(new LightUnitEnemy(new Position(500, 1200), new HealthPoints(40), mainTower, time),
                     new Long(20000)),
             new Pair<Enemy, Long>(new LightUnitEnemy(new Position(-10, 700), new HealthPoints(40), mainTower, time),
@@ -308,10 +308,18 @@ public class World {
                     new Long(120000)),
             new Pair<Enemy, Long>(new LightUnitEnemy(new Position(500, -40), new HealthPoints(40), mainTower, time),
                     new Long(120000)),
-             new Pair<Enemy, Long>(new LightUnitEnemy(new Position(700, -40), new HealthPoints(40), mainTower, time),
-                    new Long(120000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(700, -40), new HealthPoints(40), mainTower, time),
+                    new Long(121000)),
             new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1300, 400), new HealthPoints(40), mainTower, time),
-                    new Long(120000))
+                    new Long(121000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(0, 0), new HealthPoints(40), mainTower, time),
+                    new Long(121000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1300, 500), new HealthPoints(40), mainTower, time),
+                    new Long(122000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(500, -50), new HealthPoints(40), mainTower, time),
+                    new Long(122000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(-20, 500), new HealthPoints(40), mainTower, time),
+                    new Long(122000))
         )), 120000));
 
         progressBar = new ProgressBar(time, waves, reminder);

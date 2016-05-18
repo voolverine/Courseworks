@@ -9,10 +9,13 @@ public class HealthPoints {
     private int current_hp;
     private int maximal_hp;
     private boolean killed = false;
+    private long last_hurtTime;
 
     public HealthPoints(int maxHealth) {
         current_hp = maxHealth;
         maximal_hp = maxHealth;
+
+        last_hurtTime = 0;
     }
 
     public HealthPoints(int curHealth, int maxHealth) {
@@ -30,8 +33,18 @@ public class HealthPoints {
     }
 
 
+    private void update_last_hurtTime() {
+        last_hurtTime = World.time.getCurrentGameTimeMillis();
+    }
+
+    public long getLast_hurtTime() {
+        return last_hurtTime;
+    }
+
+
     public void hurt(int damage) {
         current_hp = Math.max(current_hp - damage, 0);
+        update_last_hurtTime();
         isKilled();
 
         return;

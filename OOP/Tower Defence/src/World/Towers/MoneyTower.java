@@ -17,7 +17,7 @@ public class MoneyTower extends Tower implements IHealthDrawable {
     private MainTower mainTower;
     private int salary = 25;
     private long previous_salary_millis;
-    private long salary_period = 30000;
+    private long salary_period = 8000;
     private HealthProgress healthProgress;
     private boolean grabbed;
 

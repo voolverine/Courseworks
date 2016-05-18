@@ -60,7 +60,7 @@ public class ForwardMainTower implements Strategy {
 
     private boolean neighBoors(Position position1, Position position2) {
         //System.out.println(Position.dist(position1, position2));
-        if (Position.dist(position1, position2) <= 50.0) {
+        if (Position.dist(position1, position2) <= 100.0) {
             return true;
         }
 

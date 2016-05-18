@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class HeavyUnitTower extends Tower implements IHealthDrawable {
     public static Integer ImageID = new Integer(1003);
     private MainTower mainTower;
-    private double Radius = 100;
+    private double Radius = 200;
     private int damage = 10;
     private int speed = 3000;
     private Strategy strategy;

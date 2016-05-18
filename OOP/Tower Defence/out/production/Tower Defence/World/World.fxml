@@ -27,14 +27,14 @@
             <columnConstraints>
                 <ColumnConstraints percentWidth="6" halignment="CENTER"/>
                 <ColumnConstraints percentWidth="30" halignment="CENTER"/>
-                <ColumnConstraints percentWidth="34" halignment="CENTER"/>
-                <ColumnConstraints percentWidth="30" halignment="CENTER"/>
+                <ColumnConstraints percentWidth="30" halignment="RIGHT"/>
+                <ColumnConstraints percentWidth="34" halignment="LEFT"/>
             </columnConstraints>
 
             <ImageView GridPane.columnIndex="1" GridPane.rowIndex="0" />
             <FlowPane GridPane.columnIndex="0" GridPane.rowIndex="0" orientation="HORIZONTAL" fx:id="money_flow"
                       alignment="CENTER_LEFT" maxWidth="80"/>
-            <Label GridPane.columnIndex="2" GridPane.rowIndex="0" fx:id="time_label" textFill="#253180"
+            <Label GridPane.columnIndex="3" GridPane.rowIndex="0" fx:id="time_label" textFill="#253180"
                     style="-fx-font-weight: bold;">
                 <font>
                     <Font name="Courier New" size="20" />
