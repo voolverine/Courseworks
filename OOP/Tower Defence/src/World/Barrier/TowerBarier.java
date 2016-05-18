@@ -1,7 +1,9 @@
-package World;
+package World.Barrier;
 
 
 import ApplicationGUI.ImageManager;
+import World.DrawableObject;
+import World.Position;
 import javafx.scene.image.Image;
 
 /**

@@ -1,13 +1,12 @@
 package World;
 
 import ApplicationGUI.ImageManager;
-import javafx.geometry.Pos;
+import World.Barrier.TowerBarier;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 
 /**

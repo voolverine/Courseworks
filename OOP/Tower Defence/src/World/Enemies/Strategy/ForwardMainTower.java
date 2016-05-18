@@ -23,6 +23,10 @@ public class ForwardMainTower implements Strategy {
     private int waiting = 0;
     private boolean terminated = false;
     long previous_step_time;
+
+    long after_createway;
+    long creatway_period = 300;
+
     Time time;
 
     public ForwardMainTower(Enemy enemy, Time time) {
@@ -163,11 +167,23 @@ public class ForwardMainTower implements Strategy {
         if (!time.timeGoneAfter(previous_step_time, enemy.getMovingSpeed())) {
             return;
         }
+
+        if (neighBoors(enemy.getPosition(), enemy.getMainTower().getPosition())) {
+            return;
+        }
+
         previous_step_time = time.getCurrentGameTimeMillis();
 
         int ind = find_me();
 
-        if (ind == -1) {
+        if (ind == -1 || (ind == (int)way.size() - 1 && ind != -1)) {
+            if (ind != -1) {
+                if (after_createway < creatway_period) {
+                    after_createway++;
+                    return;
+                }
+                after_createway = 0;
+            }
             create_way(mapObj);
             ind = find_me();
         }

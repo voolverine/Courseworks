@@ -2,14 +2,16 @@ package World;
 
 import ApplicationGUI.ImageManager;
 import ApplicationGUI.Main;
+import World.Barrier.AverageTree;
+import World.Barrier.SmallTree;
+import World.Barrier.TowerBarier;
 import World.Enemies.Enemy;
 import World.Enemies.LightUnitEnemy;
 import World.Enemies.Wave;
 import World.Towers.*;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
@@ -18,16 +20,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.util.Pair;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Random;
 
 
 /**
@@ -68,7 +68,7 @@ public class World {
     private boolean paused = false;
     private PauseMenu pauseMenu;
     private FinishLevelChecker finishLevelChecker;
-
+    private Random random;
     public PauseMenu getPauseMenu() {
         return pauseMenu;
     }
@@ -262,18 +262,125 @@ public class World {
         }
     }
 
+    private void generateAverageTrees(int n, int x1, int y1, int x2, int y2) {
+        int k = 0;
+        int dx = x2 - x1;
+        int dy = y2 - y1;
 
-    public void initialize() {
-        InitGraphics();
+        for (int i = 0; i < 1500; i++) {
+            if (k >= n) {
+                return;
+            }
 
-        time = new Time(time_label);
-        mouseHandler = new MouseHandler(pane);
-        mapObjects = new ArrayList<DrawableObject> ();
-        waves = new ArrayList<Wave>();
+            Position position = new Position(x1 + random.nextInt(dx), y1 + random.nextInt(dy));
+            AverageTree tree = new AverageTree(new Position(-1, -1), new HealthPoints(8));
+            if (DrawableObject.isFree(position, tree, mapObjects) &&
+                    Position.dist(position, mainTower.getPosition()) >= 250) {
+
+                tree.getPosition().setX(position.getX());
+                tree.getPosition().setY(position.getY());
+
+                mapObjects.add(tree);
+                k++;
+            }
+        }
+    }
+
+    private void generateSmallTrees(int n, int x1, int y1, int x2, int y2) {
+        int k = 0;
+        int dx = x2 - x1;
+        int dy = y2 - y1;
+
+        for (int i = 0; i < 1500; i++) {
+            if (k >= n) {
+                return;
+            }
+
+            Position position = new Position(x1 + random.nextInt(dx), y1 + random.nextInt(dy));
+            SmallTree tree = new SmallTree(new Position(-1, -1), new HealthPoints(4));
+            if (DrawableObject.isFree(position, tree, mapObjects) &&
+                    Position.dist(position, mainTower.getPosition()) >= 250) {
+
+                tree.getPosition().setX(position.getX());
+                tree.getPosition().setY(position.getY());
+
+                mapObjects.add(tree);
+                k++;
+            }
+        }
+    }
+
+    private void generateTrees(int n, int x1, int y1, int x2, int y2) {
+        int smallTrees = random.nextInt(n);
+        int averageTrees = n - smallTrees;
+        generateSmallTrees(smallTrees, x1, y1, x2, y2);
+        generateAverageTrees(averageTrees, x1, y1, x2, y2);
+    }
+
+    void load_level1() {
         mainTower = new MainTower(new Position(600, 350), new HealthPoints(80), time, 1);
-
         mapObjects.add(mainTower);
         mapObjects.add(new TowerBarier(-500, -500, Main.CurrentResolutionW, 100));
+        mapObjects.add(new TowerBarier(-500, 500, 100, Main.CurrentResolutionH));
+        mapObjects.add(new TowerBarier(100, Main.CurrentResolutionH - 100, Main.CurrentResolutionW, Main.CurrentResolutionH));
+        mapObjects.add(new TowerBarier(Main.CurrentResolutionW - 100, 0, Main.CurrentResolutionW, Main.CurrentResolutionH));
+
+        waves.add(new Wave(mapObjects, time, new ArrayList<>(Arrays.asList(
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(500, 1000), new HealthPoints(40), mainTower, time),
+                    new Long(1000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(200, 1000), new HealthPoints(40), mainTower, time),
+                    new Long(20000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(200, 1000), new HealthPoints(40), mainTower, time),
+                    new Long(40000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(700, 1000), new HealthPoints(40), mainTower, time),
+                    new Long(60000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(900, 1000), new HealthPoints(40), mainTower, time),
+                    new Long(60000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(800, 1000), new HealthPoints(40), mainTower, time),
+                    new Long(60000))
+        )), 60000));
+
+        waves.add(new Wave(mapObjects, time, new ArrayList<>(Arrays.asList(
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1000, 1000), new HealthPoints(40), mainTower, time),
+                    new Long(70000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1100, 1200), new HealthPoints(40), mainTower, time),
+                    new Long(80000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(10, 800), new HealthPoints(40), mainTower, time),
+                    new Long(80000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(500, 900), new HealthPoints(40), mainTower, time),
+                    new Long(90000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(330, 800), new HealthPoints(40), mainTower, time),
+                    new Long(100000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(900, 900), new HealthPoints(40), mainTower, time),
+                    new Long(120000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(500, 840), new HealthPoints(40), mainTower, time),
+                    new Long(120000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(700, 840), new HealthPoints(40), mainTower, time),
+                    new Long(121000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(1000, 800), new HealthPoints(40), mainTower, time),
+                    new Long(121000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(800, 1000), new HealthPoints(40), mainTower, time),
+                    new Long(121000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(100, 900), new HealthPoints(40), mainTower, time),
+                    new Long(122000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(-50, 900), new HealthPoints(40), mainTower, time),
+                    new Long(122000)),
+            new Pair<Enemy, Long>(new LightUnitEnemy(new Position(-20, 800), new HealthPoints(40), mainTower, time),
+                    new Long(122000))
+        )), 120000));
+
+        generateTrees(35, 0, 0, Main.CurrentResolutionW, 200);
+        generateTrees(15, 0, 0, 200, Main.CurrentResolutionH);
+        generateTrees(15, Main.CurrentResolutionW - 200, 0, Main.CurrentResolutionW, Main.CurrentResolutionH);
+
+        progressBar = new ProgressBar(time, waves, reminder);
+        finishLevelChecker = new FinishLevelChecker(mainTower, mapObjects, time, waves, level_status);
+    }
+
+    public void load_level2() {
+        mainTower = new MainTower(new Position(600, 350), new HealthPoints(80), time, 1);
+        mapObjects.add(mainTower);
+        mapObjects.add(new TowerBarier(-500, -500, Main.CurrentResolutionW, 50));
         mapObjects.add(new TowerBarier(-500, 500, 100, Main.CurrentResolutionH));
         mapObjects.add(new TowerBarier(100, Main.CurrentResolutionH - 100, Main.CurrentResolutionW, Main.CurrentResolutionH));
         mapObjects.add(new TowerBarier(Main.CurrentResolutionW - 100, 0, Main.CurrentResolutionW, Main.CurrentResolutionH));
@@ -322,8 +429,29 @@ public class World {
                     new Long(122000))
         )), 120000));
 
+
+        generateTrees(15, 0, 0, Main.CurrentResolutionW, Main.CurrentResolutionH);
+
         progressBar = new ProgressBar(time, waves, reminder);
         finishLevelChecker = new FinishLevelChecker(mainTower, mapObjects, time, waves, level_status);
+    }
+
+    public void initialize() {
+        InitGraphics();
+
+        random = new Random();
+        time = new Time(time_label);
+        mouseHandler = new MouseHandler(pane);
+        mapObjects = new ArrayList<DrawableObject> ();
+        waves = new ArrayList<Wave>();
+
+        if (Main.level_to_play == 1) {
+            load_level1();
+        } else
+        if (Main.level_to_play == 2) {
+            load_level2();
+        }
+
         mapObjects.add(time);
 
 

@@ -28,7 +28,7 @@ public class FinishLevelChecker {
 
     private boolean wavesFinished() {
         for (int i = 0; i < waves.size(); i++) {
-            long diff = time.getDifferenceMillis(waves.get(i));
+            long diff = time.getDifferenceMillis(waves.get(i) + 3000);
 
             if (diff < 0) {
                 return false;

@@ -1,5 +1,7 @@
 package ApplicationGUI;
 
+import World.Barrier.AverageTree;
+import World.Barrier.SmallTree;
 import World.Bullets.LightUnitBullet;
 import World.Enemies.LightUnitEnemy;
 import World.ProgressBar;
@@ -51,33 +53,8 @@ public class ImageManager {
         Images.put(LightUnitEnemy.up2ID, new Image("/Images/lightUnitEnemy/up2.png"));
         Images.put(LightUnitEnemy.up3ID, new Image("/Images/lightUnitEnemy/up3.png"));
 
-
-        Images.put(LightUnitEnemy.left1ID, new Image("/Images/lightUnitEnemy/left1.png"));
-        Images.put(LightUnitEnemy.left2ID, new Image("/Images/lightUnitEnemy/left2.png"));
-        Images.put(LightUnitEnemy.left3ID, new Image("/Images/lightUnitEnemy/left3.png"));
-
-        Images.put(LightUnitEnemy.right1ID, new Image("/Images/lightUnitEnemy/right1.png"));
-        Images.put(LightUnitEnemy.right2ID, new Image("/Images/lightUnitEnemy/right2.png"));
-        Images.put(LightUnitEnemy.right3ID, new Image("/Images/lightUnitEnemy/right3.png"));
-
-
-        Images.put(LightUnitEnemy.left_down1ID, new Image("/Images/lightUnitEnemy/left_down1.png"));
-        Images.put(LightUnitEnemy.left_down2ID, new Image("/Images/lightUnitEnemy/left_down2.png"));
-        Images.put(LightUnitEnemy.left_down3ID, new Image("/Images/lightUnitEnemy/left_down3.png"));
-
-        Images.put(LightUnitEnemy.left_up1ID, new Image("/Images/lightUnitEnemy/left_up1.png"));
-        Images.put(LightUnitEnemy.left_up2ID, new Image("/Images/lightUnitEnemy/left_up2.png"));
-        Images.put(LightUnitEnemy.left_up3ID, new Image("/Images/lightUnitEnemy/left_up3.png"));
-
-
-        Images.put(LightUnitEnemy.right_down1ID, new Image("/Images/lightUnitEnemy/right_down1.png"));
-        Images.put(LightUnitEnemy.right_down2ID, new Image("/Images/lightUnitEnemy/right_down2.png"));
-        Images.put(LightUnitEnemy.right_down3ID, new Image("/Images/lightUnitEnemy/right_down3.png"));
-
-        Images.put(LightUnitEnemy.right_up1ID, new Image("/Images/lightUnitEnemy/right_up1.png"));
-        Images.put(LightUnitEnemy.right_up2ID, new Image("/Images/lightUnitEnemy/right_up2.png"));
-        Images.put(LightUnitEnemy.right_up3ID, new Image("/Images/lightUnitEnemy/right_up3.png"));
-
+        Images.put(AverageTree.ImageID, new Image("/Images/averageTree.png"));
+        Images.put(SmallTree.ImageID, new Image("/Images/smallTree.png"));
     }
 
 

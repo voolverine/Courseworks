@@ -1,6 +1,7 @@
 package World.Enemies.Strategy;
 
 
+import World.Barrier.Tree;
 import World.Bullets.LightUnitBullet;
 import World.DrawableObject;
 import World.Enemies.Enemy;
@@ -33,6 +34,12 @@ public class AttackNearest implements Strategy {
                                                         target, enemy.getBulletDamage());
         mapObj.add(bullet);
    }
+
+    private void shoot(ArrayList<DrawableObject> mapObj, Tree tree) {
+        LightUnitBullet bullet = new LightUnitBullet(new Position(enemy.getPosition()),
+                                                        tree, enemy.getBulletDamage());
+        mapObj.add(bullet);
+    }
 
 
    private boolean isCloseEnough(Tower tower) {
@@ -80,6 +87,18 @@ public class AttackNearest implements Strategy {
         if (target != null && isCloseEnough(target)) {
             shoot(mapObj);
             previous_atack_time = time.getCurrentGameTimeMillis();
+            return;
+        }
+
+        if (target == null) {
+            for (DrawableObject obj: mapObj) {
+                if (obj instanceof Tree && !((Tree) obj).getHealthPoints().isKilled()
+                        && Position.dist(obj, enemy) < enemy.getRadius()) {
+                    shoot(mapObj, (Tree)obj);
+                    previous_atack_time = time.getCurrentGameTimeMillis();
+                    return;
+                }
+            }
         }
     }
 }
