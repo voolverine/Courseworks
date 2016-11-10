@@ -31,4 +31,5 @@ std::vector<std::string> split_path(const std::string &path);
 std::string join_path(const std::vector<std::string> &v);
 size_t find(const std::vector<File> &files, const std::string &filename);
 bool is_dir(const std::vector<File> &files, const std::string &selected);
+std::string directory_size(std::string path);
 

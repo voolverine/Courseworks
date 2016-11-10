@@ -104,6 +104,23 @@ struct WIN {
         writeLine(line, crop);
         attroff(COLOR_PAIR(color_pair));
     }
+
+    void writeRight(const std::string &line) {
+        current_position_x =
+            std::max((int)startx + width  - (int)line.size(), 0);
+
+        for (size_t i = 0; i < line.size(); i++) {
+            mvaddch(current_position_y, current_position_x++, line[i]);
+        }
+
+        current_position_x = startx + 1;
+    }
+
+    void writeRightC(const std::string &line, int color_pair) {
+        attron(COLOR_PAIR(color_pair));
+        writeRight(line);
+        attroff(COLOR_PAIR(color_pair));
+    }
 };
 
 

@@ -79,8 +79,8 @@ void initialize_state(std::vector<std::string> *current_path,
 }
 
 
-void update_win(WIN *win, std::vector<File> *files,
-                                        const std::string &selected) {
+void update_win(WIN *win, const std::string &current_path,
+        std::vector<File> *files, const std::string &selected, bool sizes) {
     create_box(win, false);
     int page_size = LINES - 2;
     int selected_index = find(*files, selected);
@@ -98,21 +98,57 @@ void update_win(WIN *win, std::vector<File> *files,
     for (int i = from; i <= to; i++) {
         auto file = (*files)[i];
         if (file.d_type == DT_DIR) {
-            win -> writeLineC(file.filename, false, BLUE_ON_BLACK);
+            if (sizes) {
+                std::string folder_path = current_path;
+                if (folder_path.size() > 1) {
+                    folder_path.push_back('/');
+                }
+
+                folder_path += file.filename;
+                win -> writeRightC(directory_size(folder_path), BLUE_ON_BLACK);
+                win -> writeC(file.filename, false, BLUE_ON_BLACK);
+                win -> crop_to_next_line();
+            } else {
+                win -> writeLineC(file.filename, false, BLUE_ON_BLACK);
+            }
         } else {
-            win -> writeLine(file.filename, false);
+            if (sizes) {
+                win -> writeRight("FILE");
+                win -> write(file.filename, false);
+                win -> crop_to_next_line();
+            } else {
+                win -> writeLine(file.filename, false);
+           }
         }
     }
 
     int color = BLACK_ON_YELLOW;
+    bool folder = false;
     if ((*files)[selected_index].d_type == DT_DIR) {
         color = BLACK_ON_BLUE;
+        folder = true;
     }
 
     win -> set_line(selected_index - shift);
     win -> writeC((*files)[selected_index].filename, false, color);
     for (int i = 0; i < 200; i++) {
         win -> writeC(" ", false, color);
+    }
+    if (sizes) {
+        if (folder) {
+            std::string folder_path = current_path;
+            if (folder_path.size() > 1) {
+                folder_path.push_back('/');
+            }
+
+            folder_path += selected;
+
+            win -> writeRightC(directory_size(folder_path), color);
+            win -> crop_to_next_line();
+        } else {
+            win -> writeRightC("FILE", color);
+            win -> crop_to_next_line();
+        }
     }
 }
 
@@ -142,12 +178,13 @@ void show_right_part(std::vector<File> *current_step_files,
     int selected_index = find(*current_step_files, selected);
     if ((*current_step_files)[selected_index].d_type == DT_DIR) {
         current_path -> push_back(selected);
-        (*next_step_files) = 
+        (*next_step_files) =
             std::move(get_files_in_dir(join_path(*current_path)));
         sort(next_step_files -> begin(), next_step_files -> end(),
                 File::usual_order_cmp);
         current_path -> pop_back();
-        update_win(&right_win, next_step_files, ".");
+        update_win(&right_win, join_path(*current_path),
+                next_step_files, ".", false);
     } else {
         create_box(&right_win, false);
     }
@@ -164,12 +201,14 @@ void full_update(std::vector<std::string> *current_path,
             current_step_files, next_step_files, selected);
 
     if (current_path -> size() > 1) {
-        update_win(&left_win, previous_step_files, current_path -> back());
+        update_win(&left_win, join_path(*current_path),
+                previous_step_files, current_path -> back(), false);
     } else {
         create_box(&left_win, false);
     }
 
-    update_win(&main_win, current_step_files, *selected);
+    update_win(&main_win, join_path(*current_path),
+            current_step_files, *selected, true);
     update_address_line(&address_win, current_path, *selected);
     show_right_part(current_step_files, next_step_files, current_path,
                                                 *selected);
@@ -189,11 +228,13 @@ void left_handler(std::vector<std::string> *current_path,
         initialize_state(current_path, previous_step_files,
                 current_step_files, next_step_files, selected);
         *selected = std::move(back);
-        update_win(&main_win, current_step_files, *selected);
+        update_win(&main_win, join_path(*current_path),
+                current_step_files, *selected, true);
 
         if (previous_step_files -> size() > 0) {
             std::string selected_in_previous = current_path -> back();
-            update_win(&left_win, previous_step_files, selected_in_previous);
+            update_win(&left_win, join_path(*current_path),
+                    previous_step_files, selected_in_previous, false);
         } else {
             create_box(&left_win, false);
         }
@@ -214,7 +255,8 @@ void down_handler(std::vector<std::string> *current_path,
     }
 
     *selected = (*current_step_files)[ind].filename;
-    update_win(&main_win, current_step_files, *selected);
+    update_win(&main_win, join_path(*current_path),
+            current_step_files, *selected, true);
     show_right_part(current_step_files, next_step_files, current_path,
                                                 *selected);
 }
@@ -231,7 +273,8 @@ void up_handler(std::vector<std::string> *current_path,
     }
 
     *selected = (*current_step_files)[ind].filename;
-    update_win(&main_win, current_step_files, *selected);
+    update_win(&main_win, join_path(*current_path),
+            current_step_files, *selected, true);
 
     show_right_part(current_step_files, next_step_files, current_path,
                                                 *selected);

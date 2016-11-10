@@ -85,3 +85,31 @@ bool is_dir(const std::vector<File> &files, const std::string &selected) {
     return selected_index < files.size()
                          && files[selected_index].d_type == DT_DIR; 
 }
+
+
+std::string directory_size(std::string path) {
+    DIR *dir = opendir(path.c_str());
+    struct dirent *current;
+    int ans = 0;
+
+    if (dir != nullptr) {
+        while (current = readdir(dir)) {
+            ans++;
+        }
+        closedir(dir);
+    }
+
+    ans -= 2;
+    std::string result = "";
+    while (ans > 0) {
+        result.push_back(ans % 10 + '0');
+        ans /= 10;
+    }
+
+
+    if (result.size() == 0) {
+        result.push_back('0');
+    }
+    reverse(result.begin(), result.end());
+    return result;
+}
