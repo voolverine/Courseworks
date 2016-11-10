@@ -9,12 +9,19 @@
 #include "fileutil/fileutil.h"
 
 
+    WIN address_win;
+    WIN left_win;
+    WIN main_win;
+    WIN right_win;
+    WIN command_win;
+
+
 void initialize_main_windows(WIN *address_win,
                              WIN *left_win,
                              WIN *main_win,
                              WIN *right_win,
                              WIN *command_win) {
-    
+
     int main_win_width = COLS * 3 / 8;
     int right_win_width = COLS * 4 / 8;
     int left_win_width = COLS - main_win_width - right_win_width;
@@ -46,17 +53,6 @@ void initialize_main_windows(WIN *address_win,
 }
 
 
-size_t find(const std::vector<File> &files, const std::string &filename) {
-    for (size_t i = 0; i < files.size(); i++) {
-        if (files[i].filename == filename) {
-            return i;
-        }
-    }
-
-    return files.size();
-}
-
-
 void initialize_state(std::vector<std::string> *current_path,
                         std::vector<File> *previous_step_files,
                         std::vector<File> *current_step_files,
@@ -70,19 +66,37 @@ void initialize_state(std::vector<std::string> *current_path,
     if (current_path -> size() > 1) {
         std::string temp = current_path -> back();
         current_path -> pop_back();
-        *previous_step_files = 
+        *previous_step_files =
             std::move(get_files_in_dir(join_path(*current_path)));
         current_path -> push_back(temp);
     }
     *current_step_files = std::move(get_files_in_dir(join_path(*current_path)));
+    sort((*previous_step_files).begin(), (*previous_step_files).end(),
+            File::usual_order_cmp);
+    sort((*current_step_files).begin(), (*current_step_files).end(),
+            File::usual_order_cmp);
     *selected = ".";
 }
 
 
-void update_win(WIN *win, std::vector<File> *files, std::string selected) {
+void update_win(WIN *win, std::vector<File> *files,
+                                        const std::string &selected) {
     create_box(win, false);
-    
-    for (auto file: *files) {
+    int page_size = LINES - 2;
+    int selected_index = find(*files, selected);
+    int from = 0;
+    int to = std::min(page_size - 1, (int)files->size() - 1);
+    int shift = 0;
+
+    if (selected_index >= page_size) {
+        shift = selected_index - page_size + 1;
+    }
+
+    from += shift;
+    to += shift;
+
+    for (int i = from; i <= to; i++) {
+        auto file = (*files)[i];
         if (file.d_type == DT_DIR) {
             win -> writeLineC(file.filename, false, BLUE_ON_BLACK);
         } else {
@@ -90,21 +104,16 @@ void update_win(WIN *win, std::vector<File> *files, std::string selected) {
         }
     }
 
-    if (selected != "") {
-        int ind = find(*files, selected);
-        int color = BLACK_ON_YELLOW;
-        if ((*files)[ind].d_type == DT_DIR) {
-            color = BLACK_ON_BLUE;
-        }
-
-        win -> set_line(ind);
-        win -> writeC((*files)[ind].filename, false, color);
-        for (int i = 0; i < 200; i++) {
-            win -> writeC(" ", false, color);
-        }
+    int color = BLACK_ON_YELLOW;
+    if ((*files)[selected_index].d_type == DT_DIR) {
+        color = BLACK_ON_BLUE;
     }
 
-    refresh();
+    win -> set_line(selected_index - shift);
+    win -> writeC((*files)[selected_index].filename, false, color);
+    for (int i = 0; i < 200; i++) {
+        win -> writeC(" ", false, color);
+    }
 }
 
 
@@ -113,10 +122,107 @@ void update_address_line(WIN *win, std::vector<std::string> *path,
     create_box(win, false);
     win -> writeC(get_exec_user() + ":", false, GREEN_ON_BLACK);
     win -> writeC(join_path(*path), false, BLUE_ON_BLACK);
-    win -> writeC("/", false, BLUE_ON_BLACK);
+    if (path -> size() > 1) {
+        win -> writeC("/", false, BLUE_ON_BLACK);
+    }
     win -> writeC(selected, false, WHITE_ON_BLACK);
+}
 
-    refresh();
+
+void show_right_part(std::vector<File> *current_step_files, 
+                     std::vector<File> *next_step_files,
+                     std::vector<std::string> *current_path,
+                     const std::string &selected) {
+    next_step_files -> clear();
+    if (selected == "." || selected == "..") {
+        create_box(&right_win, false);
+        return;
+    }
+
+    int selected_index = find(*current_step_files, selected);
+    if ((*current_step_files)[selected_index].d_type == DT_DIR) {
+        current_path -> push_back(selected);
+        (*next_step_files) = 
+            std::move(get_files_in_dir(join_path(*current_path)));
+        sort(next_step_files -> begin(), next_step_files -> end(),
+                File::usual_order_cmp);
+        current_path -> pop_back();
+        update_win(&right_win, next_step_files, ".");
+    } else {
+        create_box(&right_win, false);
+    }
+}
+
+
+void left_handler(std::vector<std::string> *current_path,
+                        std::vector<File> *previous_step_files,
+                        std::vector<File> *current_step_files,
+                        std::vector<File> *next_step_files,
+                        std::string *selected) {
+    if (current_path -> size() > 1) {
+        std::string back = current_path -> back();
+        current_path -> pop_back();
+
+        initialize_state(current_path, previous_step_files,
+                current_step_files, next_step_files, selected);
+        *selected = std::move(back);
+        update_win(&main_win, current_step_files, *selected);
+
+        if (previous_step_files -> size() > 0) {
+            std::string selected_in_previous = current_path -> back();
+            update_win(&left_win, previous_step_files, selected_in_previous);
+        } else {
+            create_box(&left_win, false);
+        }
+        show_right_part(current_step_files, next_step_files, current_path,
+                                                    *selected);
+    }
+}
+
+
+void down_handler(std::vector<std::string> *current_path,
+                        std::vector<File> *previous_step_files,
+                        std::vector<File> *current_step_files,
+                        std::vector<File> *next_step_files,
+                        std::string *selected) {
+    int ind = find(*current_step_files, *selected);
+    if (ind + 1 < current_step_files -> size()) {
+        ind++;
+    }
+
+    *selected = (*current_step_files)[ind].filename;
+    update_win(&main_win, current_step_files, *selected);
+    show_right_part(current_step_files, next_step_files, current_path,
+                                                *selected);
+}
+
+
+void up_handler(std::vector<std::string> *current_path,
+                        std::vector<File> *previous_step_files,
+                        std::vector<File> *current_step_files,
+                        std::vector<File> *next_step_files,
+                        std::string *selected) {
+    int ind = find(*current_step_files, *selected);
+    if (ind - 1 > -1) {
+        ind--;
+    }
+
+    *selected = (*current_step_files)[ind].filename;
+    update_win(&main_win, current_step_files, *selected);
+    show_right_part(current_step_files, next_step_files, current_path,
+                                                *selected);
+}
+
+
+void right_handler(std::vector<std::string> *current_path,
+                        std::vector<File> *previous_step_files,
+                        std::vector<File> *current_step_files,
+                        std::vector<File> *next_step_files,
+                        std::string *selected) {
+    create_box(&left_win, false);
+    create_box(&main_win, false);
+    create_box(&right_win, false);
+
 }
 
 
@@ -128,62 +234,37 @@ int main() {
         return 0;
     }
     initialize_gui_settings();
-    
-    WIN address_win;
-    WIN left_win;
-    WIN main_win;
-    WIN right_win;
-    WIN command_win;
-
     initialize_main_windows(&address_win, &left_win,
             &main_win, &right_win, &command_win);
-
-    /*
-    address_win.writeC(get_exec_user() + ":", false, GREEN_ON_BLACK);
-    address_win.writeC(get_exec_path(), false, BLUE_ON_BLACK);
-
-    std::vector<std::string> current_state = split_path(get_exec_path());
-    std::string selected_now = 0;
-
-    update_win_for_dir(&main_win, join_path(current_state), 0);
-    std::string temp = current_state.back();
-    current_state.pop_back();
-    update_win_for_dir(&left_win, join_path(current_state), 0);
-    current_state.push_back(temp);
-    */
 
     std::vector<std::string> current_path = split_path(get_exec_path());
     std::vector<File> previous_step_files;
     std::vector<File> current_step_files;
     std::vector<File> next_step_files;
-    std::string selected = "";
+    std::string selected = ".";
 
     initialize_state(&current_path, &previous_step_files,
             &current_step_files, &next_step_files, &selected);
     update_win(&main_win, &current_step_files, selected);
+    if (previous_step_files.size() > 0) {
+        update_win(&left_win, &previous_step_files, current_path.back());
+    }
     update_address_line(&address_win, &current_path, selected);
+    show_right_part(&current_step_files, &next_step_files, &current_path,
+                                                selected);
 
     while (42) {
         int ch = getch();
 
         if (ch == LEFT_KEY) {
-
+            left_handler(&current_path, &previous_step_files,
+                &current_step_files, &next_step_files, &selected);
         } else if (ch == DOWN_KEY) {
-            int ind = find(current_step_files, selected);            
-            if (ind + 1 < current_step_files.size()) {
-                ind++;
-            }
-
-            selected = current_step_files[ind].filename;
-            update_win(&main_win, &current_step_files, selected);
+            down_handler(&current_path, &previous_step_files,
+                &current_step_files, &next_step_files, &selected);
         } else if (ch == UP_KEY) {
-            int ind = find(current_step_files, selected);            
-            if (ind - 1 > -1) {
-                ind--;
-            }
-
-            selected = current_step_files[ind].filename;
-            update_win(&main_win, &current_step_files, selected);
+            up_handler(&current_path, &previous_step_files,
+                &current_step_files, &next_step_files, &selected);
         } else if (ch == RIGHT_KEY) {
 
         } else if (ch == HELP_KEY) {
@@ -194,6 +275,7 @@ int main() {
         }
 
         update_address_line(&address_win, &current_path, selected);
+        refresh();
     }
 
     return 0;

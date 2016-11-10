@@ -68,3 +68,22 @@ std::string join_path(const std::vector<std::string> &v) {
 
     return result;
 }
+
+
+size_t find(const std::vector<File> &files, const std::string &filename) {
+    for (size_t i = 0; i < files.size(); i++) {
+        if (files[i].filename == filename) {
+            return i;
+        }
+    }
+
+    return files.size();
+}
+
+
+bool is_dir(const std::vector<File> &files,
+                const std::string &selected) {
+    size_t selected_index = find(files, selected);
+    return selected_index < files.size()
+                         && files[selected_index].d_type == DT_DIR; 
+}
