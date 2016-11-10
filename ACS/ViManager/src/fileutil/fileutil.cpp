@@ -80,9 +80,7 @@ size_t find(const std::vector<File> &files, const std::string &filename) {
     return files.size();
 }
 
-
-bool is_dir(const std::vector<File> &files,
-                const std::string &selected) {
+bool is_dir(const std::vector<File> &files, const std::string &selected) {
     size_t selected_index = find(files, selected);
     return selected_index < files.size()
                          && files[selected_index].d_type == DT_DIR; 

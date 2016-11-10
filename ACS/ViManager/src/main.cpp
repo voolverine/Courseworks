@@ -129,7 +129,7 @@ void update_address_line(WIN *win, std::vector<std::string> *path,
 }
 
 
-void show_right_part(std::vector<File> *current_step_files, 
+void show_right_part(std::vector<File> *current_step_files,
                      std::vector<File> *next_step_files,
                      std::vector<std::string> *current_path,
                      const std::string &selected) {
@@ -152,6 +152,29 @@ void show_right_part(std::vector<File> *current_step_files,
         create_box(&right_win, false);
     }
 }
+
+
+void full_update(std::vector<std::string> *current_path,
+                        std::vector<File> *previous_step_files,
+                        std::vector<File> *current_step_files,
+                        std::vector<File> *next_step_files,
+                        std::string *selected) {
+
+    initialize_state(current_path, previous_step_files,
+            current_step_files, next_step_files, selected);
+
+    if (current_path -> size() > 1) {
+        update_win(&left_win, previous_step_files, current_path -> back());
+    } else {
+        create_box(&left_win, false);
+    }
+
+    update_win(&main_win, current_step_files, *selected);
+    update_address_line(&address_win, current_path, *selected);
+    show_right_part(current_step_files, next_step_files, current_path,
+                                                *selected);
+}
+
 
 
 void left_handler(std::vector<std::string> *current_path,
@@ -209,6 +232,7 @@ void up_handler(std::vector<std::string> *current_path,
 
     *selected = (*current_step_files)[ind].filename;
     update_win(&main_win, current_step_files, *selected);
+
     show_right_part(current_step_files, next_step_files, current_path,
                                                 *selected);
 }
@@ -219,10 +243,17 @@ void right_handler(std::vector<std::string> *current_path,
                         std::vector<File> *current_step_files,
                         std::vector<File> *next_step_files,
                         std::string *selected) {
-    create_box(&left_win, false);
-    create_box(&main_win, false);
-    create_box(&right_win, false);
-
+    if (*selected == ".") {
+        full_update(current_path, previous_step_files,
+                current_step_files, next_step_files, selected);
+    } else if (*selected == "..") {
+        left_handler(current_path, previous_step_files,
+                current_step_files, next_step_files, selected);
+    } else if (is_dir(*current_step_files, *selected)) {
+        current_path -> push_back(*selected);
+        full_update(current_path, previous_step_files,
+                current_step_files, next_step_files, selected);
+    }
 }
 
 
@@ -242,16 +273,8 @@ int main() {
     std::vector<File> current_step_files;
     std::vector<File> next_step_files;
     std::string selected = ".";
-
-    initialize_state(&current_path, &previous_step_files,
-            &current_step_files, &next_step_files, &selected);
-    update_win(&main_win, &current_step_files, selected);
-    if (previous_step_files.size() > 0) {
-        update_win(&left_win, &previous_step_files, current_path.back());
-    }
-    update_address_line(&address_win, &current_path, selected);
-    show_right_part(&current_step_files, &next_step_files, &current_path,
-                                                selected);
+    full_update(&current_path, &previous_step_files,
+        &current_step_files, &next_step_files, &selected);
 
     while (42) {
         int ch = getch();
@@ -266,7 +289,8 @@ int main() {
             up_handler(&current_path, &previous_step_files,
                 &current_step_files, &next_step_files, &selected);
         } else if (ch == RIGHT_KEY) {
-
+            right_handler(&current_path, &previous_step_files,
+                &current_step_files, &next_step_files, &selected);
         } else if (ch == HELP_KEY) {
 
         } else if (ch == EXIT_KEY) {
