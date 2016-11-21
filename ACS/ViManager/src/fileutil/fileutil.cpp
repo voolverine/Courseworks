@@ -1,5 +1,6 @@
 #include "fileutil.h"
 
+
 std::string get_exec_path() {
     char the_path[256];
 
@@ -112,4 +113,147 @@ std::string directory_size(std::string path) {
     }
     reverse(result.begin(), result.end());
     return result;
+}
+
+
+std::string to_string(int x) {
+    std::string result = "";
+
+    while (x > 0) {
+        result += (x % 10) + '0';
+        x /= 10;
+    }
+
+    if (result == "") {
+        return "0";
+    }
+    std::reverse(result.begin(), result.end());
+    return result;
+}
+
+
+std::string format_size(int64_t size) {
+    int first = 0;
+    bool dot = false;
+    int second = 0;
+    std::string ending = "";
+
+    if (size < 1024)  {
+        first = size;
+        ending = " B";
+    } else if (1024 <= size && size < 1048576) {
+        first = size / 1024;
+        if (size % 1024 != 0) {
+            dot = true;
+            second = size % 1000;
+        }
+        ending = " K";
+    } else if (1048576 <= size && size < 1073741824){
+        size /= 1024;
+        first = size / 1024;
+        if (size % 1024 != 0) {
+            dot = true; 
+            second = size % 1000;
+        }
+        ending = " M";
+    } else {
+        size /= 1048576;
+        first = size / 1024;
+        if (size % 1024 != 0) {
+            dot = true; 
+            second = size % 1000;
+        }
+        ending = " G";
+    }
+
+    std::string formatted = to_string(first);
+    if (dot) {
+        formatted += "." + to_string(second);
+    }
+    formatted += ending;
+
+    return formatted;
+}
+
+
+std::string file_size(std::string path) {
+    FILE *file = nullptr;     
+    file = fopen(path.c_str(), "rb");
+    fseek(file, 0, SEEK_END);
+    int64_t size = ftell(file);
+    fclose(file);
+
+    return format_size(size);
+}
+
+
+std::string get_file_permissions(std::string path) {
+    struct stat results; 
+    stat(path.c_str(), &results);
+    std::string special = "-";
+    std::string owner = "";
+    std::string group = "";
+    std::string other = "";
+
+    if (results.st_mode & S_IFDIR) {
+        special = "d";
+    } else if (S_ISLNK(results.st_mode)) {
+        special = "l";
+    } else if (results.st_mode & S_ISUID) {
+        special = "s";
+    } else if (results.st_mode & S_ISVTX) {
+        special = "t";
+    }
+
+    std::vector<int> owner_masks = {S_IRUSR, S_IWUSR, S_IXUSR};
+    std::vector<int> group_masks = {S_IRGRP, S_IWGRP, S_IXGRP};
+    std::vector<int> other_masks = {S_IROTH, S_IWOTH, S_IXOTH};
+    std::vector<std::string> symb = {"r", "w", "x"};
+
+    for (size_t i = 0; i < owner_masks.size(); i++) {
+        if (results.st_mode & owner_masks[i]) {
+            owner += symb[i];
+        } else {
+            owner += "-";
+        }
+
+        if (results.st_mode & group_masks[i]) {
+            group += symb[i];
+        } else {
+            group += "-";
+        }
+
+        if (results.st_mode & other_masks[i]) {
+            other += symb[i];
+        } else {
+            other += "-";
+        }
+    }
+
+    std::string result = special + owner + group + other;
+
+    return result;
+}
+
+
+std::string get_file_other_info(std::string path) {
+    struct stat results; 
+    stat(path.c_str(), &results);
+
+    std::string result = "";
+    struct passwd *pw = getpwuid(results.st_uid);
+    struct group  *gr = getgrgid(results.st_gid);
+
+    if (pw != nullptr) {
+        result += " " + std::string(pw -> pw_name);
+    }
+    if (gr != nullptr) {
+        result += " " + std::string(gr -> gr_name);
+    }
+/*
+    struct tm * timeinfo = localtime(&results.st_ctime); 
+    if (timeinfo != nullptr) {
+        result += " " + std::string(asctime(timeinfo));
+    }
+*/
 }

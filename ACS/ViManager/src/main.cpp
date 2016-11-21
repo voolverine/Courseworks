@@ -113,7 +113,14 @@ void update_win(WIN *win, const std::string &current_path,
             }
         } else {
             if (sizes) {
-                win -> writeRight("FILE");
+                std::string file_path = current_path;
+                if (file_path.size() > 1) {
+                    file_path.push_back('/');
+                }
+
+                file_path += file.filename;
+
+                win -> writeRight(file_size(file_path));
                 win -> write(file.filename, false);
                 win -> crop_to_next_line();
             } else {
@@ -146,10 +153,28 @@ void update_win(WIN *win, const std::string &current_path,
             win -> writeRightC(directory_size(folder_path), color);
             win -> crop_to_next_line();
         } else {
-            win -> writeRightC("FILE", color);
+            std::string file_path = current_path;
+            if (file_path.size() > 1) {
+                file_path.push_back('/');
+            }
+
+            file_path += selected;
+
+            win -> writeRightC(file_size(file_path), color);
             win -> crop_to_next_line();
         }
     }
+
+    std::string permission_target = current_path;
+    if (permission_target.size() > 1) {
+        permission_target.push_back('/');
+    }
+    permission_target += selected;
+    std::string permissions = get_file_permissions(permission_target);
+    std::string other_info = get_file_other_info(permission_target);
+    create_box(&command_win, false);
+    command_win.write(permissions, false);
+    command_win.write(other_info, false);
 }
 
 
