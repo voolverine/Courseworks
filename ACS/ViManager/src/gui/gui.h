@@ -16,6 +16,11 @@
 #define RIGHT_KEY 'l'
 #define HELP_KEY KEY_F(1)
 #define EXIT_KEY KEY_F(10)
+#define PRIO_KEY KEY_F(8)
+
+
+#define NORMAL_MODE 1
+#define PRIORI_MODE 2
 
 struct WIN_BORDER {
     chtype  ls, rs, ts, bs,
@@ -33,7 +38,7 @@ struct WIN {
     int current_position_y = -1;
 
     bool can_add_one_char_in_line() {
-        return current_position_x < startx + width;
+        return current_position_x < startx + width - 1;
     }
 
     bool can_add_one_char_in_window() {
@@ -76,7 +81,7 @@ struct WIN {
             if (!can_add_one_char_in_line()) {
                 if (crop) {
                     crop_to_next_line();
-                } else {
+                    mvaddch(current_position_y, current_position_x++, line[i]);
                     continue;
                 }
             } else {

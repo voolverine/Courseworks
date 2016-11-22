@@ -40,4 +40,6 @@ std::string directory_size(std::string path);
 std::string file_size(std::string path);
 std::string get_file_permissions(std::string path);
 std::string get_file_other_info(std::string path);
-
+bool have_access_to_read_file(std::string path);
+bool have_access_to_read_directory(std::string path);
+std::vector<std::string> file_repr(std::string path);

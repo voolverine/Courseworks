@@ -31,6 +31,8 @@ std::vector<File> get_files_in_dir(const std::string &path) {
         }
 
         closedir(dir);
+    } else {
+        return std::vector<File> (0);
     }
 
     return result;
@@ -98,6 +100,8 @@ std::string directory_size(std::string path) {
             ans++;
         }
         closedir(dir);
+    } else {
+        return "empty";
     }
 
     ans -= 2;
@@ -179,6 +183,10 @@ std::string format_size(int64_t size) {
 std::string file_size(std::string path) {
     FILE *file = nullptr;     
     file = fopen(path.c_str(), "rb");
+    if (file == nullptr) {
+        return "unknown";
+    }
+
     fseek(file, 0, SEEK_END);
     int64_t size = ftell(file);
     fclose(file);
@@ -250,10 +258,56 @@ std::string get_file_other_info(std::string path) {
     if (gr != nullptr) {
         result += " " + std::string(gr -> gr_name);
     }
-/*
-    struct tm * timeinfo = localtime(&results.st_ctime); 
-    if (timeinfo != nullptr) {
-        result += " " + std::string(asctime(timeinfo));
+
+    result += " " + std::string(ctime(&results.st_mtime));
+    return result;
+}
+
+
+bool have_access_to_read_file(std::string path) {
+    FILE *file = fopen(path.c_str(), "a");
+    if (file != nullptr) {
+        fclose(file);
+        return true;
     }
-*/
+
+    return false;
+}
+
+
+bool have_access_to_read_directory(std::string path) {
+    DIR *dir = opendir(path.c_str());
+
+    if (dir != nullptr) {
+        closedir(dir);
+        return true;
+    }
+
+    return false;
+}
+
+
+std::vector<std::string> file_repr(std::string path) {
+    FILE *file = fopen(path.c_str(), "r");
+    std::vector<std::string> result;
+
+    if (file == nullptr) {
+        return result;
+    }
+
+    char line[1024];
+    while (fgets(line, sizeof(line), file)) {
+        std::string to_res = "";
+        size_t str_length = strlen(line);
+        for (size_t i = 0; i < str_length; i++) {
+            if (line[i] == '\t') {
+                to_res += "    ";
+            } else {
+                to_res += line[i];
+            }
+        }
+        result.push_back(to_res);
+    }
+
+    return result;
 }

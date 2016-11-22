@@ -15,6 +15,16 @@
     WIN right_win;
     WIN command_win;
 
+void log(std::string str) {
+    FILE *file = fopen("log.log", "a");
+
+    if (file != nullptr) {
+        fprintf(file, "%s\n", str.c_str());
+        fclose(file);
+    }
+}
+
+
 
 void initialize_main_windows(WIN *address_win,
                              WIN *left_win,
@@ -82,6 +92,9 @@ void initialize_state(std::vector<std::string> *current_path,
 void update_win(WIN *win, const std::string &current_path,
         std::vector<File> *files, const std::string &selected, bool sizes) {
     create_box(win, false);
+    if (files -> size() == 0) {
+        return;
+    }
     int page_size = LINES - 2;
     int selected_index = find(*files, selected);
     int from = 0;
@@ -173,7 +186,7 @@ void update_win(WIN *win, const std::string &current_path,
     std::string permissions = get_file_permissions(permission_target);
     std::string other_info = get_file_other_info(permission_target);
     create_box(&command_win, false);
-    command_win.write(permissions, false);
+    command_win.writeC(permissions, false, BLUE_ON_BLACK);
     command_win.write(other_info, false);
 }
 
@@ -187,6 +200,14 @@ void update_address_line(WIN *win, std::vector<std::string> *path,
         win -> writeC("/", false, BLUE_ON_BLACK);
     }
     win -> writeC(selected, false, WHITE_ON_BLACK);
+}
+
+
+void show_lines_in_win(WIN *win, const std::vector<std::string> &array) {
+    create_box(win, false);
+    for (size_t i = 0; i < array.size(); i++) {
+        win -> writeLine(array[i], true);
+    }
 }
 
 
@@ -211,7 +232,11 @@ void show_right_part(std::vector<File> *current_step_files,
         update_win(&right_win, join_path(*current_path),
                 next_step_files, ".", false);
     } else {
-        create_box(&right_win, false);
+        current_path -> push_back(selected);
+        std::vector<std::string> contains = std::move(
+                file_repr(join_path(*current_path)));
+        current_path -> pop_back();
+        show_lines_in_win(&right_win, contains);
     }
 }
 
@@ -253,6 +278,7 @@ void left_handler(std::vector<std::string> *current_path,
         initialize_state(current_path, previous_step_files,
                 current_step_files, next_step_files, selected);
         *selected = std::move(back);
+
         update_win(&main_win, join_path(*current_path),
                 current_step_files, *selected, true);
 
@@ -319,8 +345,14 @@ void right_handler(std::vector<std::string> *current_path,
                 current_step_files, next_step_files, selected);
     } else if (is_dir(*current_step_files, *selected)) {
         current_path -> push_back(*selected);
-        full_update(current_path, previous_step_files,
-                current_step_files, next_step_files, selected);
+        if (have_access_to_read_directory(join_path(*current_path))) {
+            log("ACCESS");
+            full_update(current_path, previous_step_files,
+                    current_step_files, next_step_files, selected);
+        } else {
+            log("NOACCESS");
+            current_path -> pop_back();
+        }
     }
 }
 
@@ -344,22 +376,42 @@ int main() {
     full_update(&current_path, &previous_step_files,
         &current_step_files, &next_step_files, &selected);
 
+    int current_mode = NORMAL_MODE;
+
     while (42) {
         int ch = getch();
 
         if (ch == LEFT_KEY) {
-            left_handler(&current_path, &previous_step_files,
-                &current_step_files, &next_step_files, &selected);
+            if (current_mode == NORMAL_MODE) {
+                left_handler(&current_path, &previous_step_files,
+                    &current_step_files, &next_step_files, &selected);
+            } else if (current_mode == PRIORI_MODE) {
+
+            }
         } else if (ch == DOWN_KEY) {
-            down_handler(&current_path, &previous_step_files,
-                &current_step_files, &next_step_files, &selected);
+            if (current_mode == NORMAL_MODE) {
+                down_handler(&current_path, &previous_step_files,
+                    &current_step_files, &next_step_files, &selected);
+            } else if (current_mode == PRIORI_MODE) {
+
+            }
         } else if (ch == UP_KEY) {
-            up_handler(&current_path, &previous_step_files,
-                &current_step_files, &next_step_files, &selected);
+            if (current_mode == NORMAL_MODE) {
+                up_handler(&current_path, &previous_step_files,
+                    &current_step_files, &next_step_files, &selected);
+            } else if (current_mode == PRIORI_MODE) {
+
+            }
         } else if (ch == RIGHT_KEY) {
-            right_handler(&current_path, &previous_step_files,
-                &current_step_files, &next_step_files, &selected);
+            if (current_mode == NORMAL_MODE) {
+                right_handler(&current_path, &previous_step_files,
+                    &current_step_files, &next_step_files, &selected);
+            } else if (current_mode == PRIORI_MODE) {
+
+            }
         } else if (ch == HELP_KEY) {
+
+        } else if (ch == PRIO_KEY) {
 
         } else if (ch == EXIT_KEY) {
             endwin();
