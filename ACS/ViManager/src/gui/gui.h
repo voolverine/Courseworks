@@ -17,10 +17,12 @@
 #define HELP_KEY KEY_F(1)
 #define EXIT_KEY KEY_F(10)
 #define PRIO_KEY KEY_F(8)
-
+#define KEY_ENTER 10
+#define KEY_ESC 27
 
 #define NORMAL_MODE 1
 #define PRIORI_MODE 2
+#define INSERT_MODE 3
 
 struct WIN_BORDER {
     chtype  ls, rs, ts, bs,

@@ -244,6 +244,22 @@ std::string get_file_permissions(std::string path) {
 }
 
 
+std::string get_file_owner(std::string path) {
+    struct stat results; 
+    stat(path.c_str(), &results);
+    struct passwd *pw = getpwuid(results.st_uid);
+    return std::string(pw -> pw_name);
+}
+
+
+std::string get_file_group(std::string path) {
+    struct stat results; 
+    stat(path.c_str(), &results);
+    struct group *gr = getgrgid(results.st_gid);
+    return std::string(gr -> gr_name);
+}
+
+
 std::string get_file_other_info(std::string path) {
     struct stat results; 
     stat(path.c_str(), &results);
@@ -310,4 +326,43 @@ std::vector<std::string> file_repr(std::string path) {
     }
 
     return result;
+}
+
+
+bool change_file_priority(std::string filename, std::string mode,
+        std::string owner, std::string group) {
+
+    mode_t filemode = 0;
+    std::vector<mode_t> masks = {S_IRUSR, S_IWUSR, S_IXUSR,
+                              S_IRGRP, S_IWGRP, S_IXGRP,
+                              S_IROTH, S_IWOTH, S_IXOTH};
+    for (size_t i = 1; i < mode.size(); i++) {
+        if (mode[i] != '-') {
+            filemode |= masks[i - 1];
+        }
+    }
+
+    int result = chmod(filename.c_str(), filemode);    
+    if (result == -1) {
+        return false;
+    }
+    std::string base_owner = get_file_owner(filename);
+    std::string base_group = get_file_group(filename);
+
+    if (owner == base_owner && group == base_group) {
+        return true;
+    }
+    
+    struct passwd *pw = getpwnam(owner.c_str());
+    struct group  *gr = getgrnam(group.c_str());
+    if (pw == nullptr || gr == nullptr) {
+        return false;
+    }
+
+    result = chown(filename.c_str(), pw -> pw_uid, gr -> gr_gid);
+    if (result == -1) {
+        return false;
+    } else {
+        return true;
+    }
 }

@@ -43,3 +43,8 @@ std::string get_file_other_info(std::string path);
 bool have_access_to_read_file(std::string path);
 bool have_access_to_read_directory(std::string path);
 std::vector<std::string> file_repr(std::string path);
+std::string get_file_owner(std::string path);
+std::string get_file_group(std::string path);
+bool change_file_priority(std::string filename, std::string mode,
+        std::string onwer, std::string group);
+

@@ -9,11 +9,24 @@
 #include "fileutil/fileutil.h"
 
 
-    WIN address_win;
-    WIN left_win;
-    WIN main_win;
-    WIN right_win;
-    WIN command_win;
+WIN address_win;
+WIN left_win;
+WIN main_win;
+WIN right_win;
+WIN command_win;
+
+int current_mode = NORMAL_MODE;
+
+/* PRIORITY KEY FAST CODE ;( */
+int mode_position = 0;
+int selected_line = 0;
+std::string mode_string = "";
+std::string ownerS = "Owner:";
+std::string groupS = "Group:";
+std::string current_owner = "";
+std::string current_group = "";
+std::string *current;
+
 
 void log(std::string str) {
     FILE *file = fopen("log.log", "a");
@@ -23,7 +36,6 @@ void log(std::string str) {
         fclose(file);
     }
 }
-
 
 
 void initialize_main_windows(WIN *address_win,
@@ -356,6 +368,131 @@ void right_handler(std::vector<std::string> *current_path,
     }
 }
 
+void priority_mode_draw() {
+    create_box(&left_win, false);
+
+    for (int i = 0; i < mode_position && i < mode_string.size(); i++) {
+        std::string out = "";
+        out += mode_string[i];
+        left_win.write(out, false);
+    }
+    std::string selected = "";
+    selected += mode_string[mode_position];
+    if (selected_line == 0) {
+        left_win.writeC(selected, false, BLACK_ON_BLUE);
+    } else {
+        left_win.write(selected, false);
+    }
+
+
+    for (int i = mode_position + 1; i < mode_string.size(); i++) {
+        std::string out = "";
+        out += mode_string[i];
+        left_win.write(out, false);
+    }
+
+    left_win.crop_to_next_line();
+    left_win.crop_to_next_line();
+    left_win.writeLineC(ownerS, false, BLUE_ON_BLACK);
+    left_win.write(current_owner, false);
+    if (selected_line == 1) {
+        left_win.writeC(" ", false, BLACK_ON_BLUE);
+    }
+    left_win.crop_to_next_line();
+
+    left_win.writeLineC(groupS, false, BLUE_ON_BLACK);
+    left_win.write(current_group, false);
+    if (selected_line == 2) {
+        left_win.writeC(" ", false, BLACK_ON_BLUE);
+    }
+    left_win.crop_to_next_line();
+}
+
+
+void initialize_priority_mode(std::vector<std::string> *current_path,
+                                std::string *selected) {
+    current_path -> push_back(*selected);
+    mode_string = get_file_permissions(join_path(*current_path));
+    current_owner = get_file_owner(join_path(*current_path));
+    log(current_owner);
+    current_group = get_file_group(join_path(*current_path));
+    log(current_group);
+    current_path -> pop_back();
+    mode_position = 1;
+
+
+    priority_mode_draw();
+}
+
+
+void priority_mode_left_handler() {
+    if (mode_position > 1) {
+        mode_position--;
+    }
+    priority_mode_draw();
+}
+
+
+void priority_mode_right_handler() {
+    if (mode_position + 1 < mode_string.size()) {
+        mode_position++;
+    }
+    priority_mode_draw();
+}
+
+
+void priority_mode_updown_handler() {
+    std::vector<char> modes = {'x', 'r', 'w'};
+    int mode = mode_position % 3;
+
+    if (mode_string[mode_position] == '-') {
+        mode_string[mode_position] = modes[mode];
+    } else {
+        mode_string[mode_position] = '-';
+    }
+    priority_mode_draw();
+}
+
+
+void priority_mode_enter_handler(std::vector<std::string> *current_path,
+                        std::vector<File> *previous_step_files,
+                        std::vector<File> *current_step_files,
+                        std::vector<File> *next_step_files,
+                        std::string *selected) {
+    if (previous_step_files -> size() > 0) {
+        std::string selected_in_previous = current_path -> back();
+        update_win(&left_win, join_path(*current_path),
+                previous_step_files, selected_in_previous, false);
+    } else {
+        create_box(&left_win, false);
+    }
+    show_right_part(current_step_files, next_step_files, current_path,
+                                                *selected);
+    update_win(&main_win, join_path(*current_path),
+            current_step_files, *selected, true);
+}
+
+
+void write_to_current(char ch) {
+    if (ch == 127 || ch == 8) {
+        if (current -> size() > 0) {
+            current -> pop_back();
+        }
+    } else {
+        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')
+                || ch == '_' || (ch >= '0' && ch <= '9')) {
+            current -> push_back(ch);
+        }
+    }
+
+    priority_mode_draw();
+}
+
+
+void add_status_message(std::string message, int color) {
+    command_win.writeC(message, false, color);
+}
+
 
 int main() {
     initscr();
@@ -376,46 +513,83 @@ int main() {
     full_update(&current_path, &previous_step_files,
         &current_step_files, &next_step_files, &selected);
 
-    int current_mode = NORMAL_MODE;
-
     while (42) {
         int ch = getch();
+        if (selected_line > 0 && current_mode == PRIORI_MODE) {
+            write_to_current(ch);
+        }
 
         if (ch == LEFT_KEY) {
             if (current_mode == NORMAL_MODE) {
                 left_handler(&current_path, &previous_step_files,
                     &current_step_files, &next_step_files, &selected);
             } else if (current_mode == PRIORI_MODE) {
-
+                priority_mode_left_handler();
             }
         } else if (ch == DOWN_KEY) {
             if (current_mode == NORMAL_MODE) {
                 down_handler(&current_path, &previous_step_files,
                     &current_step_files, &next_step_files, &selected);
             } else if (current_mode == PRIORI_MODE) {
-
+                priority_mode_updown_handler();
             }
         } else if (ch == UP_KEY) {
             if (current_mode == NORMAL_MODE) {
                 up_handler(&current_path, &previous_step_files,
                     &current_step_files, &next_step_files, &selected);
             } else if (current_mode == PRIORI_MODE) {
-
+                priority_mode_updown_handler();
             }
         } else if (ch == RIGHT_KEY) {
             if (current_mode == NORMAL_MODE) {
                 right_handler(&current_path, &previous_step_files,
                     &current_step_files, &next_step_files, &selected);
             } else if (current_mode == PRIORI_MODE) {
-
+                priority_mode_right_handler();
             }
         } else if (ch == HELP_KEY) {
 
-        } else if (ch == PRIO_KEY) {
+        } else if (current_mode == NORMAL_MODE && ch == PRIO_KEY) {
+            current_mode = PRIORI_MODE;
+            initialize_priority_mode(&current_path, &selected);
+        } else if (ch == KEY_ENTER) {
+            if (current_mode == NORMAL_MODE) {
+            } else if (current_mode == PRIORI_MODE) {
+                current_path.push_back(selected);
+                bool result = change_file_priority(join_path(current_path),
+                        mode_string, current_owner, current_group);
 
+                current_path.pop_back();
+                current_mode = NORMAL_MODE;
+                priority_mode_enter_handler(&current_path, &previous_step_files,
+                    &current_step_files, &next_step_files, &selected);
+                if (result) {
+                    add_status_message("SUCCESS", GREEN_ON_BLACK);
+                } else {
+                    add_status_message("ERROR", BLACK_ON_YELLOW);
+                }
+            }
+        } else if (ch == KEY_ESC) {
+            if (current_mode == PRIORI_MODE) {
+                current_mode = NORMAL_MODE;
+                priority_mode_enter_handler(&current_path, &previous_step_files,
+                    &current_step_files, &next_step_files, &selected);
+                refresh();
+            }
+        } else if (ch == KEY_UP) {
+            selected_line = std::max(selected_line - 1, 0);
+            priority_mode_draw();
+        } else if (ch == KEY_DOWN) {
+            selected_line = std::min(selected_line + 1, 2);
+            priority_mode_draw();
         } else if (ch == EXIT_KEY) {
             endwin();
             return 0;
+        }
+        if (selected_line == 1) {
+            current = &current_owner;
+        } else if (selected_line == 2) {
+            current = &current_group;
         }
 
         update_address_line(&address_win, &current_path, selected);
